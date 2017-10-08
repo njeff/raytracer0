@@ -7,4 +7,4 @@ I think there is a bug for the reflection/refraction of dielectrics but I'm not 
 ## Samples
 ![Book cover.](https://github.com/njeff/raytracer0/blob/master/samples/output.png)
 ![Cornell box.](https://github.com/njeff/raytracer0/blob/master/samples/output_box5.png)
-1[Texture Map.](https://github.com/njeff/raytracer0/blob/master/samples/0053rot.jpg)
+![Texture Map.](https://github.com/njeff/raytracer0/blob/master/samples/0053rot.jpg)
