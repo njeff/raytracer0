@@ -1,17 +1,14 @@
-import java.io.File;
-import javax.imageio.ImageIO;
-import java.io.IOException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class TracerV{
+public class Tracer{
 	public static void main(String[] args){
-		int nx = 1280;
-		int ny = 720;
-		int ns = 25;
+		int nx = 600;
+		int ny = 400;
+		int ns = 50;
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
-		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 		/*
 		Hitable[] list = new Hitable[4];
 		list[0] = new Sphere(new Vec3(0,0,-1),0.5, new Lambertian(new Vec3(0.8,0.3,0.3)));
@@ -23,14 +20,12 @@ public class TracerV{
 		*/
 		
 		HitableList world = random_scene();
-		/*
 		Vec3 lookfrom = new Vec3(13,4,3);
-		Vec3 lookat = new Vec3(0,1,0);
+		Vec3 lookat = new Vec3(0,0,0);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 7.1;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 40, (double)(nx)/ny, aperture, dist_to_focus);
-		*/
-		Camera cam;
+		
 		/*
 		HitableList world = cornell();
 		Vec3 lookfrom = new Vec3(0,0,-5);
@@ -39,37 +34,26 @@ public class TracerV{
 		double aperture = 11;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus);
 		*/
-		int seconds = 15;
-		int fps = 24;
-		int totalFrames = fps*seconds;
-		
-		for(int frames = 0; frames < totalFrames; frames++){
-			cam = camControl(frames, totalFrames, nx, ny);
 
-			for(int j = 0; j<ny; j++){
-				System.out.println("Row: " + j);
-				for(int i = 0; i<nx; i++){
-					Vec3 col = new Vec3(0,0,0);
-					for(int s =0; s<ns; s++){ //anti-aliasing
-						double u = (i+Math.random())/nx;
-						double v = (j+Math.random())/ny;
-						Ray r = cam.get_ray(u,v);
-						//Vec3 p = r.point_at_parameter(2.0);
-						col = col.add(color(r,world,0));
-					}
-					col = col.div(ns);
-					col = new Vec3(Math.sqrt(col.e[0]),Math.sqrt(col.e[1]),Math.sqrt(col.e[2])); //gamma
-					Color c = new Color((int)(255*col.r()),(int)(255*col.g()),(int)(255*col.b()));
-					img.setRGB(i,ny-j-1,c.getRGB());
+		for(int j = 0; j<ny; j++){
+			System.out.println("Row: " + j);
+			for(int i = 0; i<nx; i++){
+				Vec3 col = new Vec3(0,0,0);
+				for(int s =0; s<ns; s++){ //anti-aliasing
+					double u = (i+Math.random())/nx;
+					double v = (j+Math.random())/ny;
+					Ray r = cam.get_ray(u,v);
+					//Vec3 p = r.point_at_parameter(2.0);
+					col = col.add(color(r,world,0));
 				}
-				gr.drawImage(img,0,0,null);
+				col = col.div(ns);
+				col = new Vec3(Math.sqrt(col.e[0]),Math.sqrt(col.e[1]),Math.sqrt(col.e[2])); //gamma
+				Color c = new Color((int)(255*col.r()),(int)(255*col.g()),(int)(255*col.b()));
+				img.setRGB(i,ny-j-1,c.getRGB());
 			}
-			try{
-				ImageIO.write(img, "jpg", new File(String.format("rotate3/%04drot.jpg",frames)));
-			} catch (IOException e){
-
-			}
+			gr.drawImage(img,0,0,null);
 		}
+		gr.drawImage(img,0,0,null);
 	}
 
 	//calculates the color of a pixel
@@ -94,28 +78,12 @@ public class TracerV{
 		}
 	}
 
-	static Camera camControl(int frames, int totalFrames, int nx, int ny){
-		frames +=1;
-		double startRadius = 18;
-		double endRadius = 2;
-		double startFov = 10;
-		double endFov = 120;
-
-		Vec3 lookfrom = new Vec3(Math.cos(2*Math.PI*frames/totalFrames + Math.PI/4)*(startRadius+(endRadius-startRadius)*Math.pow((double)frames/totalFrames,0.25)), 4, Math.sin(2*Math.PI*frames/totalFrames + Math.PI/4)*(startRadius+(endRadius-startRadius)*Math.pow((double)frames/totalFrames,0.25))); //rotate
-		//Vec3 lookfrom = new Vec3(1,1,-(startRadius + (endRadius-startRadius)*Math.pow((double)frames/totalFrames,0.25)));
-		Vec3 lookat = new Vec3(0,1,0);
-		double dist_to_focus = lookfrom.sub(lookat).length();
-		double aperture = 7.1;
-		return new Camera(lookfrom, lookat, new Vec3(0,1,0), startFov+(endFov-startFov)*frames/totalFrames, (double)(nx)/ny, aperture, dist_to_focus);
-	}
-
-
 	//generates a random scene of spheres, like the cover of the book
 	static HitableList random_scene(){
 		int n = 500;
 		Hitable[] list = new Hitable[n+1];
 		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(new Vec3(0.5,0.5,0.5))); //ground
-		list[1] = new Sphere(new Vec3(20,20,20),3, new Emitter(new Vec3(1,1,1))); //sun
+		list[1] = new Sphere(new Vec3(10,10,10),3, new Emitter(new Vec3(1,1,1))); //sun
 		int i = 2;
 		for(int a = -7; a < 7; a++){
 			for(int b = -7; b< 7; b++){
@@ -134,11 +102,10 @@ public class TracerV{
 		}
 
 		//three center spheres
-		list[i++] = new Sphere(new Vec3(0,1,4),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
-		list[i++] = new Sphere(new Vec3(0,1,0),0.8, new TextureSphere("PathfinderMap.jpg"));
-		list[i++] = new Sphere(new Vec3(0,1,-3),0.1, new TextureSphere("moon.jpg"));
+		//list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
+		list[i++] = new Sphere(new Vec3(0,1,0),1.0, new TextureSphere("../textures/PathfinderMap.jpg"));
 		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new Vec3(0.4,0.2,0.1)));
-		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Metal(new Vec3(0.95,0.95,0.95), 0));
+		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
 
 		return new HitableList(list,i);
 	}
@@ -153,7 +120,7 @@ public class TracerV{
 		list[i++] = new Sphere(new Vec3(1001,0,0), 1000, new Lambertian(new Vec3(0.75,0.25,0.25))); //left
 		list[i++] = new Sphere(new Vec3(-1001,0,0), 1000, new Lambertian(new Vec3(0.25,0.75,0.25))); //right
 		//list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new Metal(new Vec3(0.95,0.95,0.95),0.01)); //metal
-		list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new TextureSphere("PathfinderMap.jpg"));
+		list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new TextureSphere("../textures/PathfinderMap.jpg"));
 		list[i++] = new Sphere(new Vec3(-0.5,-0.6,-0.7), 0.4, new Dielectric(new Vec3(1,1,1),1.5));
 		list[i++] = new Sphere(new Vec3(0,10.98,0), 10, new Emitter(new Vec3(1,1,1)));
 		return new HitableList(list,i);
