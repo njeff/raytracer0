@@ -23,12 +23,21 @@ public class Utilities{
 		}
 	}
 
-
 	//approximation of fresnel equation
 	//returns proportion of light that is reflected
 	static double schlick(double cosine, double ref_idx){
 		double r0 = (1-ref_idx)/(1+ref_idx);
 		r0 = r0*r0;
 		return r0 + (1-r0)*Math.pow(1-cosine,5);
+	}
+
+	static AABB surrounding_box(AABB box0, AABB box1){
+		Vec3 small = new Vec3(Math.min(box0.min().x(), box1.min().x()),
+							Math.min(box0.min().y(), box1.min().y()),
+							Math.min(box0.min().z(), box1.min().z()));
+		Vec3 big = new Vec3(Math.min(box0.max().x(), box1.max().x()),
+							Math.min(box0.max().y(), box1.max().y()),
+							Math.min(box0.max().z(), box1.max().z()));
+		return new AABB(small,big);
 	}
 }

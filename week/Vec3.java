@@ -79,4 +79,8 @@ public class Vec3{
 		e[1] = v.e[1];
 		e[2] = v.e[2];
 	}
+
+	public double get(int i){
+		return e[i];
+	}
 }

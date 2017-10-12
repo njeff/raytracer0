@@ -37,4 +37,9 @@ public class Sphere extends Hitable{
 		}
 		return false;
 	}
+
+	boolean bounding_box(double t0, double t1, AABB box){
+		box.set(new AABB(center.sub(new Vec3(radius, radius, radius)),center.add(new Vec3(radius, radius, radius))));
+		return true;
+	}
 }
