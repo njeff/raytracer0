@@ -34,3 +34,18 @@ class CheckerTexture extends Texture{
 		}
 	}
 }
+
+class NoiseTexture extends Texture{
+	Perlin noise = new Perlin();
+	double scale = 1;
+
+	public NoiseTexture() {}
+
+	public NoiseTexture(double sc) {
+		scale = sc;
+	}
+
+	public Vec3 value(double u, double v, Vec3 p){
+		return (new Vec3(1,1,1)).mul(noise.noise(p.mul(scale)));
+	}
+}

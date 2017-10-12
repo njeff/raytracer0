@@ -94,10 +94,11 @@ public class Tracer{
 	}
 
 	static HitableList two_spheres(){
-		Texture checker = new CheckerTexture(new ConstantTexture(new Vec3(0.2,0.3,0.1)), new ConstantTexture(new Vec3(0.9,0.9,0.9)));
+		//Texture checker = new CheckerTexture(new ConstantTexture(new Vec3(0.2,0.3,0.1)), new ConstantTexture(new Vec3(0.9,0.9,0.9)));
+		Texture pertex = new NoiseTexture();
 		Hitable[] list = new Hitable[2];
-		list[0] = new Sphere(new Vec3(0,-10,0),10, new Lambertian(checker));
-		list[1] = new Sphere(new Vec3(0,10,0),10, new Lambertian(checker));
+		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(pertex));
+		list[1] = new Sphere(new Vec3(0,2,0),2, new Lambertian(pertex));
 		return new HitableList(list,2);
 	}
 }

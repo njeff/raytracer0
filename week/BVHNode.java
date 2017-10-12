@@ -16,7 +16,7 @@ public class BVHNode extends Hitable{
 		if(n == 1){
 			left = l[0];
 			right = l[1]
-		} else if (n ==2){
+		} else if (n == 2){
 			left = new bvh_node(1, n/2, time0, time1);
 			right = new bvh_node(1 + n/2, n-n/2, time0, time1);
 		}
