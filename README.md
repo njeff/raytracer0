@@ -9,9 +9,14 @@ I'm currently implementing the continuation of the ray tracer in the next book, 
 
 ## Samples from the first raytracer (and my additions)
 <p align="center">
-  <img src="https://github.com/njeff/raytracer0/blob/master/samples/output.png" alt="Book cover." width="700px" />
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/output.png" alt="Book cover." width="700px"/>
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/output_box5.png" alt="Cornell box." width="700px"/>
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/0053rot.jpg" alt="Texture map." width="700px"/>
+</p>
+
+## Samples from the next week raytracer
+<p align="center">
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_box.png" width="700px"/>
 </p>

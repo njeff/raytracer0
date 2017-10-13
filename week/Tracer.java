@@ -5,7 +5,7 @@ public class Tracer{
 	public static void main(String[] args){
 		int nx = 600;
 		int ny = 600;
-		int ns = 50;
+		int ns = 1000;
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
@@ -120,18 +120,25 @@ public class Tracer{
 	}
 
 	static HitableList cornell_box(){
-		Hitable[] list = new Hitable[6];
+		Hitable[] list = new Hitable[8];
 		int i = 0;
 		Material red = new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)));
 		Material white = new Lambertian(new ConstantTexture(new Vec3(0.73, 0.73, 0.73)));
 		Material green = new Lambertian(new ConstantTexture(new Vec3(0.12, 0.45, 0.15)));
 		Material light = new DiffuseLight(new ConstantTexture(new Vec3(15, 15, 15)));
+		//walls and light
 		list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 		list[i++] = new YZRect(0, 555, 0, 555, 0, red);
-		list[i++] = new XZRect(213, 343, 277, 332, 554, light);
+		list[i++] = new XZRect(213, 343, 227, 332, 554, light);
 		list[i++] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
 		list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 		list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+		//boxes
+		list[i++] = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18), new Vec3(130, 0, 65));
+		list[i++] = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15), new Vec3(265, 0, 295));
+
+		// list[i++] = new Translate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), new Vec3(130, 0, 65));
+		// list[i++] = new Translate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), new Vec3(265, 0, 295));
 		return new HitableList(list,i);
 	}
 }

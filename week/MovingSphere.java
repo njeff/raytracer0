@@ -15,7 +15,7 @@ public class MovingSphere extends Hitable{
 		mat = m;
 	}
 
-	boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
+	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
 		Vec3 oc = r.origin().sub(center(r.time()));
 		double a = Vec3.dot(r.direction(),r.direction());
 		double b = Vec3.dot(oc, r.direction());
