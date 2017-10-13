@@ -1,11 +1,11 @@
 # Raytracing in One Weekend and the Next Week
 
-This is a Java implementation of the raytracer from the book Ray Tracing in One Weekend by Peter Shirley. I added texture mapping for the spheres and emitters. I think there is a bug for the reflection/refraction of dielectrics but I'm not sure.
+This is a Java implementation of the raytracer from the book *Ray Tracing in One Weekend* by Peter Shirley. I added texture mapping for the spheres and emitters. I think there is a bug for the reflection/refraction of dielectrics but I'm not sure.
 
 Why in Java? When I followed the first book I was trying to better learn Java and didn't want to copy paste (already knew C++ better too). Turns out the lack of operator overloading and pass by reference also gets really gross. 
 
 The initial raytracer with my modifications is found in the `weekend` folder.
-I'm currently implementing the continuation of the ray tracer in the next book, Ray Tracing: The Next Week, in the folder `week`.
+I'm currently implementing the continuation of the ray tracer in the next book, *Ray Tracing: The Next Week*, in the folder `week`.
 
 ## Samples from the first raytracer (and my additions)
 <p align="center">
