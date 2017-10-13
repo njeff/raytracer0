@@ -11,7 +11,7 @@ public class Sphere extends Hitable{
 		mat = m;
 	}
 
-	boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
+	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
 		Vec3 oc = r.origin().sub(center);
 		double a = Vec3.dot(r.direction(),r.direction());
 		double b = Vec3.dot(oc, r.direction());
@@ -25,6 +25,7 @@ public class Sphere extends Hitable{
 				rec.t = temp;
 				rec.p = r.point_at_parameter(rec.t);
 				rec.normal = rec.p.sub(center).div(radius);
+				get_sphere_uv(rec.normal,rec);
 				return true;
 			}
 			temp = (-b + Math.sqrt(discriminant))/a;
@@ -32,14 +33,22 @@ public class Sphere extends Hitable{
 				rec.t = temp;
 				rec.p = r.point_at_parameter(rec.t);
 				rec.normal = rec.p.sub(center).div(radius);
+				get_sphere_uv(rec.normal,rec);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	boolean bounding_box(double t0, double t1, AABB box){
+	public boolean bounding_box(double t0, double t1, AABB box){
 		box.set(new AABB(center.sub(new Vec3(radius, radius, radius)),center.add(new Vec3(radius, radius, radius))));
 		return true;
+	}
+
+	private void get_sphere_uv(Vec3 p, HitRecord rec){
+		double phi = Math.atan2(p.z(), p.x());
+		double theta = Math.asin(p.y());
+		rec.u = 1-(phi + Math.PI)/(2*Math.PI);
+		rec.v = (theta + Math.PI/2)/Math.PI;
 	}
 }

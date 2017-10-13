@@ -2,8 +2,26 @@
 import java.util.Comparator;
 
 public class Hitable{
-	boolean hit(Ray r, double t_min, double t_max, HitRecord rec){return false;}
-	boolean bounding_box(double t0, double t1, AABB box){return false;}
+	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){return false;}
+	public boolean bounding_box(double t0, double t1, AABB box){return false;}
+}
+
+class FlipNormals extends Hitable{
+	Hitable ptr;
+	public FlipNormals(Hitable p){
+		ptr = p;
+	}
+	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
+		if(ptr.hit(r,t_min,t_max,rec)){
+			rec.normal = rec.normal.mul(-1);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public boolean bounding_box(double t0, double t1, AABB box){
+		return ptr.bounding_box(t0,t1,box);
+	}
 }
 
 class SortBoxX implements Comparator<Hitable>{
