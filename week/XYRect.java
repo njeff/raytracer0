@@ -35,7 +35,7 @@ public class XYRect extends Hitable{
 	}
 
 	public boolean bounding_box(double t0, double t1, AABB box){
-		box.set(new AABB(new Vec3(x0, y0, k-0.0001), new Vec3(x1, y1, k-0.0001))); //very thin
+		box.set(new AABB(new Vec3(x0, y0, k-0.0001), new Vec3(x1, y1, k+0.0001))); //very thin
 		return true;
 	}
 }
@@ -76,7 +76,7 @@ class XZRect extends Hitable{
 	}
 
 	public boolean bounding_box(double t0, double t1, AABB box){
-		box.set(new AABB(new Vec3(x0, k-0.0001, z0), new Vec3(x1, k-0.0001, z1))); //very thin
+		box.set(new AABB(new Vec3(x0, k-0.0001, z0), new Vec3(x1, k+0.0001, z1))); //very thin
 		return true;
 	}
 }
@@ -117,7 +117,7 @@ class YZRect extends Hitable{
 	}
 
 	public boolean bounding_box(double t0, double t1, AABB box){
-		box.set(new AABB(new Vec3(k-0.0001, y0, z0), new Vec3(k-0.0001, y1, z1))); //very thin
+		box.set(new AABB(new Vec3(k-0.0001, y0, z0), new Vec3(k+0.0001, y1, z1))); //very thin
 		return true;
 	}
 }

@@ -19,4 +19,6 @@ I'm currently implementing the continuation of the ray tracer in the next book, 
 ## Samples from the next week raytracer
 <p align="center">
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_box.png" width="700px"/>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_volume2.png" width="700px"/>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/box_scene.png" width="700px"/>
 </p>

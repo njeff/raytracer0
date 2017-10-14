@@ -1,11 +1,12 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.stream.*;
 
 public class Tracer{
 	public static void main(String[] args){
-		int nx = 600;
-		int ny = 600;
-		int ns = 80;
+		int nx = 500;
+		int ny = 500;
+		int ns = 500;
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
@@ -20,9 +21,28 @@ public class Tracer{
 		
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
+			final int jj = j;
+			IntStream.range(0, nx).parallel().forEach(i->{ //parallelize
+			    Vec3 col = new Vec3(0,0,0);
+				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
+					double u = (i+Math.random())/nx;
+					double v = (jj+Math.random())/ny;
+					Ray r = cam.get_ray(u,v);
+					//Vec3 p = r.point_at_parameter(2.0);
+					col = col.add(color(r,world,0));
+				}
+				col = col.div(ns);
+				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light souces
+				if(col.g() > 1) col.e[1] = 1;
+				if(col.b() > 1) col.e[2] = 1;
+				col = new Vec3(Math.sqrt(col.e[0]),Math.sqrt(col.e[1]),Math.sqrt(col.e[2])); //gamma
+				Color c = new Color((int)(255*col.r()),(int)(255*col.g()),(int)(255*col.b()));
+				img.setRGB(i,ny-jj-1,c.getRGB());
+			});
+			/*
 			for(int i = 0; i<nx; i++){
 				Vec3 col = new Vec3(0,0,0);
-				for(int s =0; s<ns; s++){ //multisampling and free anti-aliasing
+				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
 					double u = (i+Math.random())/nx;
 					double v = (j+Math.random())/ny;
 					Ray r = cam.get_ray(u,v);
@@ -30,13 +50,14 @@ public class Tracer{
 					col = col.add(color(r,world,0));
 				}
 				col = col.div(ns);
-				if(col.r() > 1) col.e[0] = 1;
+				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light souces
 				if(col.g() > 1) col.e[1] = 1;
 				if(col.b() > 1) col.e[2] = 1;
 				col = new Vec3(Math.sqrt(col.e[0]),Math.sqrt(col.e[1]),Math.sqrt(col.e[2])); //gamma
 				Color c = new Color((int)(255*col.r()),(int)(255*col.g()),(int)(255*col.b()));
 				img.setRGB(i,ny-j-1,c.getRGB());
 			}
+			*/
 			gr.drawImage(img,0,0,null);
 		}
 		gr.drawImage(img,0,0,null);
@@ -120,7 +141,7 @@ public class Tracer{
 	}
 
 	static HitableList cornell_box(){
-		Hitable[] list = new Hitable[8];
+		Hitable[] list = new Hitable[10];
 		int i = 0;
 		Material red = new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)));
 		Material white = new Lambertian(new ConstantTexture(new Vec3(0.73, 0.73, 0.73)));
@@ -134,11 +155,15 @@ public class Tracer{
 		list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 		list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 		//boxes
-		Hitable b1 = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18), new Vec3(130, 0, 65));
-		Hitable b2 = new Translate(new RotateY(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15), new Vec3(265, 0, 295));
-		list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
-		list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
-
+		Hitable b1 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -15, Rotate.Z), -20, Rotate.Y), new Vec3(130, 0, 65));
+		Hitable b2 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.X), 15, Rotate.Y), new Vec3(265, 0, 295));
+		list[i++] = b1;
+		list[i++] = b2;
+		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
+		//list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
+		list[i++] = new Sphere(new Vec3(400,60,70),60.0, new Dielectric(new Vec3(1,1,1),1.5));
+		list[i++] = new Sphere(new Vec3(150,350,300),50.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
+		//return new BVHNode(list, 0, i, 0, 1);
 		return new HitableList(list,i);
 	}
 }

@@ -1,30 +1,30 @@
 import java.util.Arrays;
 
 //need to put into use
-public class BVHNode extends Hitable{
+public class BVHNode extends HitableList{
 	AABB box;
 	Hitable left, right;
 
 	public BVHNode() {}
 
-	public BVHNode(Hitable[] l, double time0, double time1){
+	public BVHNode(Hitable[] l, int lower, int upper, double time0, double time1){
 		int axis = (int)(Math.random()*3);
 		if(axis == 0){
-			Arrays.sort(l, new SortBoxX());
+			Arrays.sort(l, lower, upper, new SortBoxX());
 		} else if(axis == 1){
-			Arrays.sort(l, new SortBoxY());
+			Arrays.sort(l, lower, upper, new SortBoxY());
 		} else {
-			Arrays.sort(l, new SortBoxZ());
+			Arrays.sort(l, lower, upper, new SortBoxZ());
 		}
-		if(l.length == 1){
-			left = l[0];
-			right = l[0];
-		} else if(l.length == 2){
-			left = l[0];
-			right = l[1];
+		if(upper-lower == 1){
+			left = l[lower];
+			right = l[lower];
+		} else if(upper-lower == 2){
+			left = l[lower];
+			right = l[lower+1];
 		} else {
-			left = new BVHNode(Arrays.copyOfRange(l,0,l.length/2), time0, time1); //not sure if this will work
-			right = new BVHNode(Arrays.copyOfRange(l,l.length/2,l.length), time0, time1);
+			left = new BVHNode(l, lower, lower + (upper-lower)/2, time0, time1); //not sure if this will work
+			right = new BVHNode(l, lower + (upper-lower)/2, upper, time0, time1);
 		}
 		AABB box_left = new AABB();
 		AABB box_right = new AABB();
