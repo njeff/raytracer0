@@ -6,18 +6,26 @@ public class Tracer{
 	public static void main(String[] args){
 		int nx = 500;
 		int ny = 500;
-		int ns = 500;
+		int ns = 10;
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 		
 		//HitableList world = simple_light();
+		/*
 		HitableList world = cornell_box();
 		Vec3 lookfrom = new Vec3(278,278,-800);
 		Vec3 lookat = new Vec3(278,278,0);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 14;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 40, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		*/
+		HitableList world = pot();
+		Vec3 lookfrom = new Vec3(120,80,200);
+		Vec3 lookat = new Vec3(80,40,40);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -76,10 +84,10 @@ public class Tracer{
 				return emitted;
 			}
 		} else { //background acts a large light source
-			// Vec3 unit_dir = Vec3.unit_vector(r.direction());
-			// double t = 0.5*(unit_dir.y() + 1.0);
-			// return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
-			return new Vec3(0,0,0);
+			Vec3 unit_dir = Vec3.unit_vector(r.direction());
+			double t = 0.5*(unit_dir.y() + 1.0);
+			return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
+			//return new Vec3(0,0,0);
 		}
 	}
 
@@ -163,7 +171,37 @@ public class Tracer{
 		//list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
 		list[i++] = new Sphere(new Vec3(400,60,70),60.0, new Dielectric(new Vec3(1,1,1),1.5));
 		list[i++] = new Sphere(new Vec3(150,350,300),50.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
+		
 		//return new BVHNode(list, 0, i, 0, 1);
+		return new HitableList(list,i);
+	}
+
+	static HitableList triangles(){
+		Hitable[] list = new Hitable[6];
+		int i = 0;
+		Material black = new Lambertian(new ConstantTexture(new Vec3(0.1, 0.1, 0.1)));
+		Material grey = new Lambertian(new ConstantTexture(new Vec3(0.5, 0.5, 0.5)));
+		Material white = new Lambertian(new ConstantTexture(new Vec3(1, 1, 1)));
+		//list[i++] = new XZRect(-20, -20, 20, 20, 0, black);
+		list[i++] = new Triangle(new Vec3(0,0,0), new Vec3(0,0,1), new Vec3(0,1,1), black);
+		list[i++] = new Triangle(new Vec3(0,0,0), new Vec3(0,1,1), new Vec3(0,1,0), grey);
+		
+		list[i++] = new Sphere(new Vec3(0,0,0),0.1, white);
+		list[i++] = new Sphere(new Vec3(0,0,1),0.1, white);
+		list[i++] = new Sphere(new Vec3(0,1,1),0.1, white);
+		list[i++] = new Sphere(new Vec3(0,1,0),0.1, white);
+		return new HitableList(list,i);
+	}
+
+	static HitableList pot(){
+		Hitable[] list = new Hitable[10];
+		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
+		Texture floor = new NoiseTexture(0.5);
+		StlLoad stl = new StlLoad("../objects/teapot.stl", porcelain);
+		int i = 0;
+		list[i++] = stl.object();
+		list[i++] = new XZRect(-50, 200,-100, 100, 0, new Lambertian(floor));
+		list[i++] = new XZRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
 		return new HitableList(list,i);
 	}
 }

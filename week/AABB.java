@@ -1,3 +1,4 @@
+//axis aligned bounding box
 public class AABB{
 	Vec3 _min, _max;
 
@@ -29,5 +30,9 @@ public class AABB{
 	public void set(AABB ab){
 		_min = ab._min;
 		_max = ab._max;
+	}
+
+	public String toString(){
+		return _min.toString() + " | " + _max.toString();
 	}
 }

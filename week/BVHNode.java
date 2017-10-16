@@ -35,11 +35,11 @@ public class BVHNode extends HitableList{
 	}
 
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
-		if(box.hit(r, t_min, t_max)){
+		if(box.hit(r, t_min, t_max)){ //if bounding box is hit
 			HitRecord left_rec = new HitRecord();
 			HitRecord right_rec = new HitRecord();
-			boolean hit_left = left.hit(r, t_min, t_max, left_rec);
-			boolean hit_right = right.hit(r, t_min, t_max, left_rec);
+			boolean hit_left = left.hit(r, t_min, t_max, left_rec); //check if subnodes are hit
+			boolean hit_right = right.hit(r, t_min, t_max, right_rec);
 			if(hit_left && hit_right){
 				if(left_rec.t < right_rec.t){ //left in front of right
 					rec.set(left_rec);

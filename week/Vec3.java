@@ -83,4 +83,8 @@ public class Vec3{
 	public double get(int i){
 		return e[i];
 	}
+
+	public String toString(){
+		return e[0] + " " + e[1] + " " + e[2];
+	}
 }

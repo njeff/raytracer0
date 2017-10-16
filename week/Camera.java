@@ -15,7 +15,7 @@ public class Camera{
 		double half_width = Math.tan(theta/2);
 		double half_height = half_width/aspect;
 		origin = lookfrom;
-		w = Vec3.unit_vector(lookfrom.sub(lookat)); //vector pointing out of camera
+		w = Vec3.unit_vector(lookfrom.sub(lookat)); //vector pointing into of camera
 		u = Vec3.unit_vector(Vec3.cross(vup,w)); //vector pointing out of side of camera, orthogonal to both view and up direction
 		v = Vec3.cross(w,u); //vector pointing out top of camera
 		//lower_left_corner = new Vec3(-half_width,-half_height,-1.0);
