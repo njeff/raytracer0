@@ -6,7 +6,7 @@ public class Tracer{
 	public static void main(String[] args){
 		int nx = 500;
 		int ny = 500;
-		int ns = 10;
+		int ns = 20;
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
@@ -22,7 +22,7 @@ public class Tracer{
 		*/
 		HitableList world = pot();
 		Vec3 lookfrom = new Vec3(120,80,200);
-		Vec3 lookat = new Vec3(80,40,40);
+		Vec3 lookat = new Vec3(90,40,40);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
@@ -78,7 +78,7 @@ public class Tracer{
 			Ray scattered = new Ray();
 			Vec3 attenuation = new Vec3();
 			Vec3 emitted = rec.mat.emitted(rec.u, rec.v, rec.p);
-			if(depth < 5 && rec.mat.scatter(r,rec,attenuation,scattered)){ //if we haven't recursed beyond max depth and there is an impact
+			if(depth < 20 && rec.mat.scatter(r,rec,attenuation,scattered)){ //if we haven't recursed beyond max depth and there is an impact
 				return color(scattered,world,depth+1).mul(attenuation).add(emitted); //attenuate and recurse
 			} else {
 				return emitted;
@@ -196,11 +196,11 @@ public class Tracer{
 	static HitableList pot(){
 		Hitable[] list = new Hitable[10];
 		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
-		Texture floor = new NoiseTexture(0.5);
+		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
 		StlLoad stl = new StlLoad("../objects/teapot.stl", porcelain);
 		int i = 0;
 		list[i++] = stl.object();
-		list[i++] = new XZRect(-50, 200,-100, 100, 0, new Lambertian(floor));
+		list[i++] = new XZRect(-1000, 1000, -1000, 1000, 10, new Metal(new Vec3(0.8,0.8,0.8), 0.05));
 		list[i++] = new XZRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
 		return new HitableList(list,i);
 	}
