@@ -1,3 +1,4 @@
+//creates a camera in 3D
 public class Camera{
 	Vec3 origin;
 	Vec3 lower_left_corner;
@@ -7,7 +8,18 @@ public class Camera{
 	double time0, time1;
 	double lens_radius;
 
-	public Camera(Vec3 lookfrom, Vec3 lookat, Vec3 vup, double hfov, double aspect, double aperture, double focus_dist, double t0, double t1){ //hfov is left to right in degrees
+	/**
+	* @param lookfrom the point in space where the camera is
+	* @param lookat the point in space where the camera is looking at
+	* @param vup the upward direction
+	* @param hfov the horizonal field of view in degrees
+	* @param aspect the aspect ratio of the output
+	* @param aperture the aperture of the camera (measures like in a real lens)
+	* @param focus_dist the distance to focus at
+	* @param t0 the starting time of an exposure
+	* @param t1 the ending time of an exposure
+	*/
+	public Camera(Vec3 lookfrom, Vec3 lookat, Vec3 vup, double hfov, double aspect, double aperture, double focus_dist, double t0, double t1){
 		time0 = t0;
 		time1 = t1;
 		lens_radius = 1/(aperture*2);

@@ -4,28 +4,24 @@ import java.util.stream.*;
 
 public class Tracer{
 	public static void main(String[] args){
-		int nx = 500;
+		int nx = 500; //output resolution
 		int ny = 500;
-		int ns = 20;
+		int ns = 20; //samples per pixel
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 		
-		//HitableList world = simple_light();
+		//HittableList world = simple_light();
 		/*
-		HitableList world = cornell_box();
+		HittableList world = cornell_box();
 		Vec3 lookfrom = new Vec3(278,278,-800);
 		Vec3 lookat = new Vec3(278,278,0);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 14;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 40, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		*/
-		HitableList world = pot();
-		Vec3 lookfrom = new Vec3(120,80,200);
-		Vec3 lookat = new Vec3(90,40,40);
-		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
-		double aperture = 128;
-		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		HittableList world = pot();
+		Camera cam = potCamera(nx,ny);
 		
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -40,7 +36,7 @@ public class Tracer{
 					col = col.add(color(r,world,0));
 				}
 				col = col.div(ns);
-				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light souces
+				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light sources
 				if(col.g() > 1) col.e[1] = 1;
 				if(col.b() > 1) col.e[2] = 1;
 				col = new Vec3(Math.sqrt(col.e[0]),Math.sqrt(col.e[1]),Math.sqrt(col.e[2])); //gamma
@@ -72,13 +68,18 @@ public class Tracer{
 	}
 
 	//calculates the color of a pixel
-	static Vec3 color(Ray r, HitableList world, int depth){
+	/**
+	* @param r the ray that needs to hit the materials in the world
+	* @param world the list of objects to hit
+	* @param depth the current recursion depth
+	*/
+	static Vec3 color(Ray r, HittableList world, int depth){
 		HitRecord rec = new HitRecord();
 		if(world.hit(r,0.001,Double.MAX_VALUE,rec)){ //intersect with list of objects
 			Ray scattered = new Ray();
 			Vec3 attenuation = new Vec3();
 			Vec3 emitted = rec.mat.emitted(rec.u, rec.v, rec.p);
-			if(depth < 20 && rec.mat.scatter(r,rec,attenuation,scattered)){ //if we haven't recursed beyond max depth and there is an impact
+			if(depth < 15 && rec.mat.scatter(r,rec,attenuation,scattered)){ //if we haven't recursed beyond max depth and there is an impact
 				return color(scattered,world,depth+1).mul(attenuation).add(emitted); //attenuate and recurse
 			} else {
 				return emitted;
@@ -92,9 +93,9 @@ public class Tracer{
 	}
 
 	//generates a random scene of spheres, like the cover of the book
-	static HitableList random_scene(){
+	static HittableList random_scene(){
 		int n = 500;
-		Hitable[] list = new Hitable[n+1];
+		Hittable[] list = new Hittable[n+1];
 		Texture checker = new CheckerTexture(new ConstantTexture(new Vec3(0.2,0.3,0.1)), new ConstantTexture(new Vec3(0.9,0.9,0.9)));
 		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(checker)); //ground
 		int i = 1;
@@ -126,30 +127,32 @@ public class Tracer{
 		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
 		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
 
-		return new HitableList(list,i);
+		return new HittableList(list,i);
 	}
 
-	static HitableList two_spheres(){
+	//two sphere test scene
+	static HittableList two_spheres(){
 		//Texture checker = new CheckerTexture(new ConstantTexture(new Vec3(0.2,0.3,0.1)), new ConstantTexture(new Vec3(0.9,0.9,0.9)));
 		Texture pertex = new NoiseTexture(5);
-		Hitable[] list = new Hitable[2];
+		Hittable[] list = new Hittable[2];
 		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(pertex));
 		list[1] = new Sphere(new Vec3(0,2,0),2, new Lambertian(pertex));
-		return new HitableList(list,2);
+		return new HittableList(list,2);
 	}
 
-	static HitableList simple_light(){
+	//lighting test scene
+	static HittableList simple_light(){
 		Texture pertex = new NoiseTexture(4);
-		Hitable[] list = new Hitable[4];
+		Hittable[] list = new Hittable[4];
 		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(pertex));
 		list[1] = new Sphere(new Vec3(0,2,0),2, new Lambertian(pertex));
 		list[2] = new Sphere(new Vec3(0,7,0),2, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
 		list[3] = new XYRect(3,5,1,3,-2, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
-		return new HitableList(list,4);
+		return new HittableList(list,4);
 	}
 
-	static HitableList cornell_box(){
-		Hitable[] list = new Hitable[10];
+	static HittableList cornell_box(){
+		Hittable[] list = new Hittable[10];
 		int i = 0;
 		Material red = new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)));
 		Material white = new Lambertian(new ConstantTexture(new Vec3(0.73, 0.73, 0.73)));
@@ -163,8 +166,8 @@ public class Tracer{
 		list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 		list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 		//boxes
-		Hitable b1 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -15, Rotate.Z), -20, Rotate.Y), new Vec3(130, 0, 65));
-		Hitable b2 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.X), 15, Rotate.Y), new Vec3(265, 0, 295));
+		Hittable b1 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -15, Rotate.Z), -20, Rotate.Y), new Vec3(130, 0, 65));
+		Hittable b2 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.X), 15, Rotate.Y), new Vec3(265, 0, 295));
 		list[i++] = b1;
 		list[i++] = b2;
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
@@ -173,11 +176,12 @@ public class Tracer{
 		list[i++] = new Sphere(new Vec3(150,350,300),50.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
 		
 		//return new BVHNode(list, 0, i, 0, 1);
-		return new HitableList(list,i);
+		return new HittableList(list,i);
 	}
 
-	static HitableList triangles(){
-		Hitable[] list = new Hitable[6];
+	//triangle debugging scene
+	static HittableList triangles(){
+		Hittable[] list = new Hittable[6];
 		int i = 0;
 		Material black = new Lambertian(new ConstantTexture(new Vec3(0.1, 0.1, 0.1)));
 		Material grey = new Lambertian(new ConstantTexture(new Vec3(0.5, 0.5, 0.5)));
@@ -190,11 +194,12 @@ public class Tracer{
 		list[i++] = new Sphere(new Vec3(0,0,1),0.1, white);
 		list[i++] = new Sphere(new Vec3(0,1,1),0.1, white);
 		list[i++] = new Sphere(new Vec3(0,1,0),0.1, white);
-		return new HitableList(list,i);
+		return new HittableList(list,i);
 	}
 
-	static HitableList pot(){
-		Hitable[] list = new Hitable[10];
+	//renders a teapot
+	static HittableList pot(){
+		Hittable[] list = new Hittable[10];
 		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
 		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
 		StlLoad stl = new StlLoad("../objects/teapot.stl", porcelain);
@@ -202,6 +207,37 @@ public class Tracer{
 		list[i++] = stl.object();
 		list[i++] = new XZRect(-1000, 1000, -1000, 1000, 10, new Metal(new Vec3(0.8,0.8,0.8), 0.05));
 		list[i++] = new XZRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
-		return new HitableList(list,i);
+		return new HittableList(list,i);
+	}
+
+	//camera setup for the pot
+	static Camera potCamera(int nx, int ny){
+		Vec3 lookfrom = new Vec3(120,80,200);
+		Vec3 lookat = new Vec3(90,40,40);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
+	}
+
+	//renders a magnolia (one of the surface normals is off I think)
+	static HittableList magnolia(){
+		Hittable[] list = new Hittable[1];
+		Material light_yellow = new Metal(new Vec3(1,0.99,0.8), 0.1);
+		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
+		StlLoad stl = new StlLoad("../objects/magnolia.stl", light_yellow);
+		int i = 0;
+		list[i++] = stl.object();
+		return new HittableList(list,i);
+	}
+
+	//camera setup for the magnolia
+	static Camera magCam(int nx, int ny){
+		Vec3 lookfrom = new Vec3(10,-120,20);
+		Vec3 lookat = new Vec3(0,0,0);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
 	}
 }

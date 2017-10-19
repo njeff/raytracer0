@@ -1,15 +1,15 @@
-//base class for all hitable objects
+//base class for all Hittable objects
 import java.util.Comparator;
 
-public class Hitable{
+public class Hittable{
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){return false;}
 	public boolean bounding_box(double t0, double t1, AABB box){return false;}
 }
 
 //flips the normal, used for flat rectangles
-class FlipNormals extends Hitable{
-	Hitable ptr;
-	public FlipNormals(Hitable p){
+class FlipNormals extends Hittable{
+	Hittable ptr;
+	public FlipNormals(Hittable p){
 		ptr = p;
 	}
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
@@ -25,12 +25,12 @@ class FlipNormals extends Hitable{
 	}
 }
 
-//translate Hitable objects by an offset
-class Translate extends Hitable{
-	Hitable ptr;
+//translate Hittable objects by an offset
+class Translate extends Hittable{
+	Hittable ptr;
 	Vec3 offset;
 
-	public Translate(Hitable p, Vec3 displacement){
+	public Translate(Hittable p, Vec3 displacement){
 		ptr = p;
 		offset = displacement;
 	}
@@ -56,13 +56,13 @@ class Translate extends Hitable{
 }
 
 //rotate about Y axis
-class RotateY extends Hitable{
-	Hitable ptr;
+class RotateY extends Hittable{
+	Hittable ptr;
 	double sin_theta, cos_theta;
 	boolean hasbox;
 	AABB bbox = new AABB();
 
-	public RotateY(Hitable p, double angle){
+	public RotateY(Hittable p, double angle){
 		ptr = p;
 		double radians = Math.PI*angle/180;
 		sin_theta = Math.sin(radians);
@@ -129,15 +129,15 @@ class RotateY extends Hitable{
 }
 
 //General rotation
-class Rotate extends Hitable{
+class Rotate extends Hittable{
 	public static final int X = 0, Y =1, Z = 2;
-	Hitable ptr;
+	Hittable ptr;
 	double sin_theta, cos_theta;
 	boolean hasbox;
 	int axis;
 	AABB bbox = new AABB();
 
-	public Rotate(Hitable p, double angle, int _axis){ //0 = x, 1 = y, 2 = z
+	public Rotate(Hittable p, double angle, int _axis){ //0 = x, 1 = y, 2 = z
 		ptr = p;
 		axis = _axis;
 		double radians = Math.PI*angle/180;
@@ -249,8 +249,8 @@ class Rotate extends Hitable{
 	}
 }
 
-class SortBoxX implements Comparator<Hitable>{
-	public int compare(Hitable a, Hitable b){
+class SortBoxX implements Comparator<Hittable>{
+	public int compare(Hittable a, Hittable b){
 		AABB box_left = new AABB();
 		AABB box_right = new AABB();
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){
@@ -264,8 +264,8 @@ class SortBoxX implements Comparator<Hitable>{
 	}
 }
 
-class SortBoxY implements Comparator<Hitable>{
-	public int compare(Hitable a, Hitable b){
+class SortBoxY implements Comparator<Hittable>{
+	public int compare(Hittable a, Hittable b){
 		AABB box_left = new AABB();
 		AABB box_right = new AABB();
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){
@@ -279,8 +279,8 @@ class SortBoxY implements Comparator<Hitable>{
 	}
 }
 
-class SortBoxZ implements Comparator<Hitable>{
-	public int compare(Hitable a, Hitable b){
+class SortBoxZ implements Comparator<Hittable>{
+	public int compare(Hittable a, Hittable b){
 		AABB box_left = new AABB();
 		AABB box_right = new AABB();
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){

@@ -1,3 +1,4 @@
+//textures that materials can take on
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +57,7 @@ class NoiseTexture extends Texture{
 	}
 }
 
+//applies UV mapped image textures
 class ImageTexture extends Texture{
 	BufferedImage img = null;
 	int height, width;

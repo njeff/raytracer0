@@ -1,9 +1,15 @@
-public class ConstantMedium extends Hitable{
-	Hitable boundary;
+//volumetric material
+public class ConstantMedium extends Hittable{
+	Hittable boundary;
 	double density;
 	Material phase_function;
 
-	public ConstantMedium(Hitable b, double d, Texture a){
+	/**
+	* @param b the surrounding object
+	* @param d the density of the medium
+	* @param a the color of the medium
+	*/
+	public ConstantMedium(Hittable b, double d, Texture a){
 		boundary = b;
 		density = d;
 		phase_function = new Isotropic(a);

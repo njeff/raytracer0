@@ -7,6 +7,7 @@ public class Utilities{
 		return p;
 	}
 
+	//returns the reflection of a vector v on a surface with normal n
 	static Vec3 reflect(Vec3 v, Vec3 n){
 		return v.sub(n.mul(Vec3.dot(v,n)*2));
 	}
@@ -23,14 +24,20 @@ public class Utilities{
 		}
 	}
 
-	//approximation of fresnel equation
-	//returns proportion of light that is reflected
+	/**
+	* Approximation of fresnel equation using schlick's approximation
+	* Other material is assumed to be air
+	* @param cosine the cosine of the angle between ray and normal
+	* @param ref_idx the index of refraction of material
+	* Returns proportion of light that is reflected
+	*/
 	static double schlick(double cosine, double ref_idx){
 		double r0 = (1-ref_idx)/(1+ref_idx);
 		r0 = r0*r0;
 		return r0 + (1-r0)*Math.pow(1-cosine,5);
 	}
 
+	//returns a bounding box that encloses both box0 and box1
 	static AABB surrounding_box(AABB box0, AABB box1){
 		Vec3 small = new Vec3(Math.min(box0.min().x(), box1.min().x()),
 							Math.min(box0.min().y(), box1.min().y()),

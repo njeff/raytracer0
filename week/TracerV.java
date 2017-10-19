@@ -13,16 +13,16 @@ public class TracerV{
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_RGB);
 		/*
-		Hitable[] list = new Hitable[4];
+		Hittable[] list = new Hittable[4];
 		list[0] = new Sphere(new Vec3(0,0,-1),0.5, new Lambertian(new Vec3(0.8,0.3,0.3)));
 		list[1] = new Sphere(new Vec3(0,-100.5,-1),100, new Lambertian(new Vec3(0.8,0.8,0.0)));
 		list[2] = new Sphere(new Vec3(1,0,-1),0.5, new Metal(new Vec3(0.8,0.6,0.2), 0.2));
 		list[3] = new Sphere(new Vec3(-1,0,-1),0.5, new Dielectric(new Vec3(1,1,1),1.5));
 
-		HitableList world = new HitableList(list,4);
+		HittableList world = new HittableList(list,4);
 		*/
 		
-		HitableList world = random_scene();
+		HittableList world = random_scene();
 		/*
 		Vec3 lookfrom = new Vec3(13,4,3);
 		Vec3 lookat = new Vec3(0,1,0);
@@ -32,7 +32,7 @@ public class TracerV{
 		*/
 		Camera cam;
 		/*
-		HitableList world = cornell();
+		HittableList world = cornell();
 		Vec3 lookfrom = new Vec3(0,0,-5);
 		Vec3 lookat = new Vec3(0,0,0);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
@@ -73,7 +73,7 @@ public class TracerV{
 	}
 
 	//calculates the color of a pixel
-	static Vec3 color(Ray r, HitableList world, int depth){
+	static Vec3 color(Ray r, HittableList world, int depth){
 		HitRecord rec = new HitRecord();
 		if(world.hit(r,0.001,Double.MAX_VALUE,rec)){ //intersect with list of objects
 			Ray scattered = new Ray();
@@ -106,15 +106,15 @@ public class TracerV{
 		Vec3 lookat = new Vec3(0,1,0);
 		double dist_to_focus = lookfrom.sub(lookat).length();
 		double aperture = 7.1;
-		return new Camera(lookfrom, lookat, new Vec3(0,1,0), startFov+(endFov-startFov)*frames/totalFrames, (double)(nx)/ny, aperture, dist_to_focus);
+		return new Camera(lookfrom, lookat, new Vec3(0,1,0), startFov+(endFov-startFov)*frames/totalFrames, (double)(nx)/ny, aperture, dist_to_focus, 0, 0);
 	}
 
 
 	//generates a random scene of spheres, like the cover of the book
-	static HitableList random_scene(){
+	static HittableList random_scene(){
 		int n = 500;
-		Hitable[] list = new Hitable[n+1];
-		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(new Vec3(0.5,0.5,0.5))); //ground
+		Hittable[] list = new Hittable[n+1];
+		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(new ConstantTexture(new Vec3(0.5,0.5,0.5)))); //ground
 		list[1] = new Sphere(new Vec3(20,20,20),3, new Emitter(new Vec3(1,1,1))); //sun
 		int i = 2;
 		for(int a = -7; a < 7; a++){
@@ -123,11 +123,14 @@ public class TracerV{
 				Vec3 center = new Vec3(a+0.9*Math.random(),0.2,b+0.9*Math.random());
 				if(center.sub(new Vec3(4,0.2,0)).length() > 0.9){
 					if(choose_mat < 0.8){
-						list[i++] = new Sphere(center, 0.2, new Lambertian(new Vec3(Math.random()*Math.random(),Math.random()*Math.random(),Math.random()*Math.random())));
+						list[i++] = new Sphere(center, 0.2, 
+							new Lambertian(new ConstantTexture(new Vec3(Math.random()*Math.random(),Math.random()*Math.random(),Math.random()*Math.random()))));
 					} else if(choose_mat < 0.95){
-						list[i++] = new Sphere(center, 0.2, new Metal(new Vec3(0.5*(1+Math.random()),0.5*(1+Math.random()),0.5*(1+Math.random())), 0.5*Math.random()));
+						list[i++] = new Sphere(center, 0.2, 
+							new Metal(new Vec3(0.5*(1+Math.random()),0.5*(1+Math.random()),0.5*(1+Math.random())), 0.5*Math.random()));
 					} else {
-						list[i++] = new Sphere(center, 0.2, new Dielectric(new Vec3(Math.random()/2+0.5,Math.random()/2+0.5,Math.random()/2+0.5), 1.5));
+						list[i++] = new Sphere(center, 0.2, 
+							new Dielectric(new Vec3(Math.random()/2+0.5,Math.random()/2+0.5,Math.random()/2+0.5), 1.5));
 					}
 				}
 			}
@@ -135,27 +138,27 @@ public class TracerV{
 
 		//three center spheres
 		list[i++] = new Sphere(new Vec3(0,1,4),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
-		list[i++] = new Sphere(new Vec3(0,1,0),0.8, new TextureSphere("../textures/PathfinderMap.jpg"));
-		list[i++] = new Sphere(new Vec3(0,1,-3),0.1, new TextureSphere("../textures/moon.jpg"));
-		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new Vec3(0.4,0.2,0.1)));
+		list[i++] = new Sphere(new Vec3(0,1,0),0.8, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
+		list[i++] = new Sphere(new Vec3(0,1,-3),0.1, new Lambertian(new ImageTexture("../textures/moon.jpg")));
+		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ConstantTexture(new Vec3(0.4,0.2,0.1))));
 		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Metal(new Vec3(0.95,0.95,0.95), 0));
 
-		return new HitableList(list,i);
+		return new HittableList(list,i);
 	}
 
-	static HitableList cornell(){
+	static HittableList cornell(){
 		int n = 8;
-		Hitable[] list = new Hitable[n];
+		Hittable[] list = new Hittable[n];
 		int i = 0;
-		list[i++] = new Sphere(new Vec3(0,0,1001), 1000, new Lambertian(new Vec3(0.9,0.9,0.9))); //back
-		list[i++] = new Sphere(new Vec3(0,1001,0), 1000, new Lambertian(new Vec3(0.9,0.9,0.9))); //top
-		list[i++] = new Sphere(new Vec3(0,-1001,0), 1000, new Lambertian(new Vec3(0.9,0.9,0.9))); //bottom
-		list[i++] = new Sphere(new Vec3(1001,0,0), 1000, new Lambertian(new Vec3(0.75,0.25,0.25))); //left
-		list[i++] = new Sphere(new Vec3(-1001,0,0), 1000, new Lambertian(new Vec3(0.25,0.75,0.25))); //right
+		list[i++] = new Sphere(new Vec3(0,0,1001), 1000, new Lambertian(new ConstantTexture(new Vec3(0.9,0.9,0.9)))); //back
+		list[i++] = new Sphere(new Vec3(0,1001,0), 1000, new Lambertian(new ConstantTexture(new Vec3(0.9,0.9,0.9)))); //top
+		list[i++] = new Sphere(new Vec3(0,-1001,0), 1000, new Lambertian(new ConstantTexture(new Vec3(0.9,0.9,0.9)))); //bottom
+		list[i++] = new Sphere(new Vec3(1001,0,0), 1000, new Lambertian(new ConstantTexture(new Vec3(0.75,0.25,0.25)))); //left
+		list[i++] = new Sphere(new Vec3(-1001,0,0), 1000, new Lambertian(new ConstantTexture(new Vec3(0.25,0.75,0.25)))); //right
 		//list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new Metal(new Vec3(0.95,0.95,0.95),0.01)); //metal
-		list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new TextureSphere("../textures/PathfinderMap.jpg"));
+		list[i++] = new Sphere(new Vec3(0.3,-0.6,0.1), 0.4, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
 		list[i++] = new Sphere(new Vec3(-0.5,-0.6,-0.7), 0.4, new Dielectric(new Vec3(1,1,1),1.5));
 		list[i++] = new Sphere(new Vec3(0,10.98,0), 10, new Emitter(new Vec3(1,1,1)));
-		return new HitableList(list,i);
+		return new HittableList(list,i);
 	}
 }

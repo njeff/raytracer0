@@ -4,7 +4,12 @@ import java.io.FileReader;
 
 //simple ASCII STL file loader
 public class StlLoad{
-	ArrayList<Hitable> list = new ArrayList<Hitable>();
+	ArrayList<Hittable> list = new ArrayList<Hittable>();
+
+	/**
+	* @param path the path to the stl file
+	* @param material the material of the final object
+	*/
 	public StlLoad(String path, Material material){
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(path));
@@ -30,7 +35,7 @@ public class StlLoad{
 		}
 	}
 
-	public HitableList object(){
-		return new HitableList(list.toArray(new Hitable[list.size()]),list.size());
+	public HittableList object(){
+		return new HittableList(list.toArray(new Hittable[list.size()]),list.size());
 	}
 }

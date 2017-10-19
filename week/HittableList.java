@@ -1,11 +1,15 @@
-//list of hitable objects
+//list of Hittable objects
 
-public class HitableList extends Hitable{
+public class HittableList extends Hittable{
 	int list_size;
-	Hitable[] list;
+	Hittable[] list;
 
-	HitableList() {}
-	HitableList(Hitable[] l, int n){
+	HittableList() {}
+	/**
+	* @param l list of Hittable objects to contain
+	* @param n number of objects in list
+	*/
+	HittableList(Hittable[] l, int n){
 		list = l; 
 		list_size = n;
 	}
@@ -14,7 +18,7 @@ public class HitableList extends Hitable{
 		HitRecord temp_rec = new HitRecord();
 		boolean hit_anything = false;
 		double closest_so_far = t_max;
-		for(int i = 0; i<list_size; i++){ //iterates through all hitable objects
+		for(int i = 0; i<list_size; i++){ //iterates through all Hittable objects
 			if(list[i].hit(r, t_min, closest_so_far, temp_rec)){
 				hit_anything = true;
 				closest_so_far = temp_rec.t;

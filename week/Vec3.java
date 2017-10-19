@@ -1,4 +1,4 @@
-//vector class
+//vector class used for position and color
 
 public class Vec3{
 	double[] e = new double[3];

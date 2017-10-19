@@ -3,6 +3,10 @@ public class Ray{
 	Vec3 B;
 	double _time;
 	public Ray(){}
+	/**
+	* @param a ray origin
+	* @param b ray direction
+	*/
 	public Ray(Vec3 a, Vec3 b){ A = a; B = b; _time = 0;}
 	public Ray(Vec3 a, Vec3 b, double ti){ A = a; B = b; _time = ti;}
 	public Vec3 origin() {return A;}

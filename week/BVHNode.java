@@ -1,13 +1,16 @@
 import java.util.Arrays;
 
-//need to put into use
-public class BVHNode extends HitableList{
+/*
+need to put into use
+designed to accelerate ray object collision detection by putting objects into a binary tree of enclosing bounding boxes
+*/
+public class BVHNode extends HittableList{
 	AABB box;
-	Hitable left, right;
+	Hittable left, right;
 
 	public BVHNode() {}
 
-	public BVHNode(Hitable[] l, int lower, int upper, double time0, double time1){
+	public BVHNode(Hittable[] l, int lower, int upper, double time0, double time1){
 		int axis = (int)(Math.random()*3);
 		if(axis == 0){
 			Arrays.sort(l, lower, upper, new SortBoxX());

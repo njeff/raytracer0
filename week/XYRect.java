@@ -1,11 +1,19 @@
 //all axis aligned planes
 //XY rectangle
-public class XYRect extends Hitable{
+public class XYRect extends Hittable{
 	double x0, x1, y0, y1, k;
 	Material mp;
 
 	public XYRect() {}
 
+	/**
+	* @param _x0 x-coord of one corner
+	* @param _x1 x-coord of other corner
+	* @param _y0 y-coord of one corner
+	* @param _y1 y-coord of other corner
+	* @param _k z-cood of plane
+	* @param mat material of plane
+	*/
 	public XYRect(double _x0, double _x1, double _y0, double _y1, double _k, Material mat){
 		x0 = _x0;
 		x1 = _x1;
@@ -41,7 +49,7 @@ public class XYRect extends Hitable{
 }
 
 //XZ Rectangle
-class XZRect extends Hitable{
+class XZRect extends Hittable{
 	double x0, x1, z0, z1, k;
 	Material mp;
 
@@ -82,7 +90,7 @@ class XZRect extends Hitable{
 }
 
 //YZ rectangle
-class YZRect extends Hitable{
+class YZRect extends Hittable{
 	double y0, y1, z0, z1, k;
 	Material mp;
 

@@ -9,6 +9,11 @@ I'm currently implementing the continuation of the ray tracer in the next book, 
 
 The models in the `objects` folder are from ![this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html).
 
+## How to use this program
+The file `Tracer.java` has the `main` for this raytracer. You can set the x and y resolution of the output with `nx` and `ny` and the number of samples per pixel with `ns`. Set `world` to a `HittableList` of the objects you want to render and `cam` to the camera you want to render the scene from.
+
+`TracerV.java` was used to render a video using the raytracer. The camera was moved as a function of time and each rendered frame was then put together into a final video.
+
 ## Samples from the first raytracer (and my additions)
 <p align="center">
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/output.png" alt="Book cover." width="700px"/>

@@ -1,3 +1,4 @@
+//Perlin noise
 public class Perlin{
 	static Vec3[] ranvec = perlin_generate();
 	static int[] perm_x = perlin_generate_perm();

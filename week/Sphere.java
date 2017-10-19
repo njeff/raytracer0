@@ -1,10 +1,15 @@
-public class Sphere extends Hitable{
+public class Sphere extends Hittable{
 	Vec3 center;
 	double radius;
 	Material mat;
 	
 	public Sphere() {}
 	
+	/**
+	* @param cen center of the sphere
+	* @param r radius
+	* @param m material
+	*/
 	public Sphere(Vec3 cen, double r, Material m){
 		center = cen;
 		radius = r;

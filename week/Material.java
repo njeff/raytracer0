@@ -1,3 +1,4 @@
+//list of materials hittable objects can take on
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ public abstract class Material{
 	}
 }
 
+//ideal diffuse material
 class Lambertian extends Material{
 	Texture albedo;
 	public Lambertian(Texture a){
@@ -23,6 +25,7 @@ class Lambertian extends Material{
 	}
 }
 
+//reflective material
 class Metal extends Material{
 	Vec3 albedo; //color
 	double fuzz; //amount of random scattering
@@ -42,6 +45,7 @@ class Metal extends Material{
 	}
 }
 
+//transparent material
 class Dielectric extends Material{
 	Vec3 transparency;
 	double ref_idx; //index of refraction
@@ -84,6 +88,7 @@ class Dielectric extends Material{
 	}
 }
 
+//my version of a light source
 class Emitter extends Material{
 	Vec3 light;
 	public Emitter(Vec3 a){
@@ -96,6 +101,7 @@ class Emitter extends Material{
 	}
 }
 
+//book's version of a light source
 class DiffuseLight extends Material{
 	Texture emit;
 
@@ -110,6 +116,7 @@ class DiffuseLight extends Material{
 	}
 }
 
+//volumetric material
 class Isotropic extends Material{
 	Texture albedo;
 	public Isotropic(Texture a){

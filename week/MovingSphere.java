@@ -1,4 +1,5 @@
-public class MovingSphere extends Hitable{
+//a sphere that moves between two points at a constant velocity
+public class MovingSphere extends Hittable{
 	Vec3 center0, center1;
 	double time0, time1;
 	double radius;
@@ -6,6 +7,14 @@ public class MovingSphere extends Hitable{
 
 	public MovingSphere() {}
 
+	/**
+	* @param cen0 center of sphere at t0
+	* @param cen1 center of sphere at 71
+	* @param t0 starting time
+	* @param t1 ending time
+	* @param r radius
+	* @param m material
+	*/
 	public MovingSphere(Vec3 cen0, Vec3 cen1, double t0, double t1, double r, Material m){
 		center0 = cen0;
 		center1 = cen1;

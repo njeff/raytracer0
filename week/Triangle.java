@@ -1,10 +1,17 @@
-//triangle hitable (no thickness)
-public class Triangle extends Hitable{
+//triangle Hittable (no thickness)
+public class Triangle extends Hittable{
 	Vec3 p0, p1, p2, normal;
 	Material m;
 
 	public Triangle() {}
 	
+	/**
+	* @param _p0 first vertex
+	* @param _p1 second vertex
+	* @param _p2 third vertex
+	* @param mat material
+	* The outward normal of the triangle is computed with the right hand rule with the vertices counterclockwise
+	*/
 	public Triangle(Vec3 _p0, Vec3 _p1, Vec3 _p2, Material mat){
 		p0 = _p0;
 		p1 = _p1;

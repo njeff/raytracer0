@@ -5,7 +5,7 @@ public class HitRecord{
 	Vec3 p;
 	Vec3 normal;
 	Material mat;
-	Hitable h;
+	Hittable h;
 	double u, v;
 
 	//get pass problem with java not being able to properly pass by refernce
