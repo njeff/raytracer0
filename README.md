@@ -21,12 +21,17 @@ The file `Tracer.java` has the `main` for this raytracer. You can set the x and 
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/output_box5.png" alt="Cornell box." width="700px"/>
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/0053rot.jpg" alt="Texture map." width="700px"/>
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/rotate.gif" alt="Video." width="480px"/>
 </p>
 
 ## Samples from the next week raytracer
 <p align="center">
-  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_box.png" width="700px"/>
-  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_volume2.png" width="700px"/>
-  <img src="https://github.com/njeff/raytracer0/blob/master/samples/box_scene.png" width="700px"/>
-  <img src="https://github.com/njeff/raytracer0/blob/master/samples/pot_metal.png" width="700px">
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_box.png" alt="Cornell box." width="700px"/>
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/cornell_volume2.png" alt="Volumes." width="700px"/>
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/box_scene.png" alt="A bit of everything." width="700px"/>
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/pot_metal.png" alt="STL sample." width="700px">
 </p>
