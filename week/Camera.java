@@ -36,6 +36,10 @@ public class Camera{
 		vertical = v.mul(2*half_height*focus_dist);
 	}
 
+	/**
+	* @param s horizontal position on the screen
+	* @param t vertical position on the screen
+	*/
 	Ray get_ray(double s, double t){
 		Vec3 rd = random_in_unit_disk().mul(lens_radius);
 		Vec3 offset = u.mul(rd.x()).sub(v.mul(rd.y()));

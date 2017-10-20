@@ -5,7 +5,17 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public abstract class Material{
+	/**
+	* @param r_in Ray hitting object
+	* @param rec HitRecord to update after hit
+	* @param attenuation change in light after hit
+	* @param scattered ray returned after hitting this material
+	*/
 	public abstract boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered);
+	
+	/**
+	* Used for light sources
+	*/
 	public Vec3 emitted(double u, double v, Vec3 p){
 		return new Vec3(0,0,0);
 	}

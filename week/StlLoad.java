@@ -35,7 +35,11 @@ public class StlLoad{
 		}
 	}
 
-	public HittableList object(){
+	public HittableList objectHL(){
 		return new HittableList(list.toArray(new Hittable[list.size()]),list.size());
+	}
+
+	public HittableList objectBVH(){
+		return new BVHNode(list.toArray(new Hittable[list.size()]),0,list.size(),0,1);
 	}
 }

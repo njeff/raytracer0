@@ -2,6 +2,12 @@
 import java.util.Comparator;
 
 public class Hittable{
+	/**
+	* @param r ray looking to intersect
+	* @param t_min minimum of range of t allowed for hit
+	* @param t_max maximum of range of t allowed for hit
+	* @param rec Record of last hit
+	*/
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){return false;}
 	public boolean bounding_box(double t0, double t1, AABB box){return false;}
 }
@@ -129,6 +135,7 @@ class RotateY extends Hittable{
 }
 
 //General rotation
+//The boudning box may be bugged, am still testing
 class Rotate extends Hittable{
 	public static final int X = 0, Y =1, Z = 2;
 	Hittable ptr;
@@ -137,7 +144,12 @@ class Rotate extends Hittable{
 	int axis;
 	AABB bbox = new AABB();
 
-	public Rotate(Hittable p, double angle, int _axis){ //0 = x, 1 = y, 2 = z
+	/**
+	* @param p object to rotate
+	* @param angle rotation angle in degrees
+	* @param _axis x = 0, y = 1, z = 2
+	*/
+	public Rotate(Hittable p, double angle, int _axis){
 		ptr = p;
 		axis = _axis;
 		double radians = Math.PI*angle/180;
@@ -256,7 +268,10 @@ class SortBoxX implements Comparator<Hittable>{
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){
 			throw new java.lang.RuntimeException("no bounding box");
 		}
-		if(box_left.min().x() - box_right.min().x() < 0){
+		if(box_left.min().x() == box_right.min().x()){
+			return 0;
+		}
+		if(box_left.min().x() < box_right.min().x()){
 			return -1;
 		} else {
 			return 1;
@@ -271,7 +286,10 @@ class SortBoxY implements Comparator<Hittable>{
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){
 			throw new java.lang.RuntimeException("no bounding box");
 		}
-		if(box_left.min().y() - box_right.min().y() < 0){
+		if(box_left.min().y() == box_right.min().y()){
+			return 0;
+		}
+		if(box_left.min().y() < box_right.min().y()){
 			return -1;
 		} else {
 			return 1;
@@ -286,7 +304,10 @@ class SortBoxZ implements Comparator<Hittable>{
 		if(!a.bounding_box(0,0, box_left) || !b.bounding_box(0,0, box_right)){
 			throw new java.lang.RuntimeException("no bounding box");
 		}
-		if(box_left.min().z() - box_right.min().z() < 0){
+		if(box_left.min().z() == box_right.min().z()){
+			return 0;
+		}
+		if(box_left.min().z() < box_right.min().z()){
 			return -1;
 		} else {
 			return 1;

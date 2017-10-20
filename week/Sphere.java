@@ -50,6 +50,11 @@ public class Sphere extends Hittable{
 		return true;
 	}
 
+	/**
+	* Gets UV coordinates of a point p on the sphere
+	* @param p point on sphere
+	* @param rec the hit record to update with uv coords
+	*/
 	private void get_sphere_uv(Vec3 p, HitRecord rec){
 		double phi = Math.atan2(p.z(), p.x());
 		double theta = Math.asin(p.y());

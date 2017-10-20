@@ -1,16 +1,27 @@
 import java.util.Arrays;
 
 /*
-need to put into use
-designed to accelerate ray object collision detection by putting objects into a binary tree of enclosing bounding boxes
+Designed to accelerate ray object collision detection by putting objects into a binary tree of enclosing bounding boxes
+There are currently some issues with this causing improper rendering. 
+I think the issue might lie in the bounding box of the rotate Hittable though.
 */
 public class BVHNode extends HittableList{
 	AABB box;
 	Hittable left, right;
+	int lower, upper;
 
 	public BVHNode() {}
 
+	/**
+	* @param l list of objects to hold
+	* @param lower starting index of objects in l that this node holds
+	* @param upper ending index of objects in l that this node holds
+	* @param time0 times used for moving objects
+	* @param time1
+	*/
 	public BVHNode(Hittable[] l, int lower, int upper, double time0, double time1){
+		this.lower = lower;
+		this.upper = upper;
 		int axis = (int)(Math.random()*3);
 		if(axis == 0){
 			Arrays.sort(l, lower, upper, new SortBoxX());
@@ -26,8 +37,8 @@ public class BVHNode extends HittableList{
 			left = l[lower];
 			right = l[lower+1];
 		} else {
-			left = new BVHNode(l, lower, lower + (upper-lower)/2, time0, time1); //not sure if this will work
-			right = new BVHNode(l, lower + (upper-lower)/2, upper, time0, time1);
+			left = new BVHNode(l, lower, (upper+lower)/2, time0, time1); //not sure if this will work
+			right = new BVHNode(l, (upper+lower)/2, upper, time0, time1);
 		}
 		AABB box_left = new AABB();
 		AABB box_right = new AABB();
@@ -67,5 +78,13 @@ public class BVHNode extends HittableList{
 	public boolean bounding_box(double t0, double t1, AABB b){
 		b.set(box);
 		return true;
+	}
+
+	public String toString(){
+		if(upper-lower <= 2){
+			return box.toString();
+		} else{
+			return box.toString() + "\n[" + left.toString() + " | " + right.toString() + "]";
+		}
 	}
 }

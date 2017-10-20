@@ -1,4 +1,7 @@
 public class Utilities{
+	/**
+	* returns a random vector in the unit sphere
+	*/
 	static Vec3 random_in_unit_sphere(){
 		Vec3 p;
 		do{
@@ -7,7 +10,10 @@ public class Utilities{
 		return p;
 	}
 
-	//returns the reflection of a vector v on a surface with normal n
+	/**
+	* @param v direction of the incidence vector
+	* @param n normal of the surface
+	*/
 	static Vec3 reflect(Vec3 v, Vec3 n){
 		return v.sub(n.mul(Vec3.dot(v,n)*2));
 	}
@@ -37,14 +43,18 @@ public class Utilities{
 		return r0 + (1-r0)*Math.pow(1-cosine,5);
 	}
 
-	//returns a bounding box that encloses both box0 and box1
+	/**
+	* @param box0
+	* @param box1
+	* returns a bounding box that encloses both box0 and box1
+	*/
 	static AABB surrounding_box(AABB box0, AABB box1){
 		Vec3 small = new Vec3(Math.min(box0.min().x(), box1.min().x()),
 							Math.min(box0.min().y(), box1.min().y()),
 							Math.min(box0.min().z(), box1.min().z()));
-		Vec3 big = new Vec3(Math.min(box0.max().x(), box1.max().x()),
-							Math.min(box0.max().y(), box1.max().y()),
-							Math.min(box0.max().z(), box1.max().z()));
+		Vec3 big = new Vec3(Math.max(box0.max().x(), box1.max().x()),
+							Math.max(box0.max().y(), box1.max().y()),
+							Math.max(box0.max().z(), box1.max().z()));
 		return new AABB(small,big);
 	}
 }

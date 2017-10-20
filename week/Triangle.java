@@ -60,7 +60,10 @@ public class Triangle extends Hittable{
 		max.e[2] = Math.max(p0.z(),Math.max(p1.z(),p2.z()));
 		min.e[0] = Math.min(p0.x(),Math.min(p1.x(),p2.x()));
 		min.e[1] = Math.min(p0.y(),Math.min(p1.y(),p2.y()));
-		min.e[2] = Math.min(p0.z(),Math.min(p1.z(),p2.z())); 
+		min.e[2] = Math.min(p0.z(),Math.min(p1.z(),p2.z()));
+		//System.out.println(min);
+		//System.out.println(max);
+		box.set(new AABB(min,max));
 		return true;
 	}
 }

@@ -31,7 +31,10 @@ public class Perlin{
 		return p;
 	}
 
-	static void permute(int[] p){ //shuffle
+	/**
+	* @param p array to shuffle
+	*/
+	static void permute(int[] p){
 		for(int i = p.length-1; i > 0; i--){
 			int target = (int)(Math.random()*(i+1));
 			int temp = p[i];
