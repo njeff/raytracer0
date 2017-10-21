@@ -57,4 +57,28 @@ public class Utilities{
 							Math.max(box0.max().z(), box1.max().z()));
 		return new AABB(small,big);
 	}
+
+	/**
+	* @param p array to shuffle
+	*/
+	static void permute(int[] p){
+		for(int i = p.length-1; i > 0; i--){
+			int target = (int)(Math.random()*(i+1));
+			int temp = p[i];
+			p[i] = p[target];
+			p[target] = temp;
+		}
+	}
+
+	/**
+	* @param p array to shuffle
+	*/
+	static void permute(double[] p){
+		for(int i = p.length-1; i > 0; i--){
+			int target = (int)(Math.random()*(i+1));
+			double temp = p[i];
+			p[i] = p[target];
+			p[target] = temp;
+		}
+	}
 }

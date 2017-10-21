@@ -31,24 +31,12 @@ public class Perlin{
 		return p;
 	}
 
-	/**
-	* @param p array to shuffle
-	*/
-	static void permute(int[] p){
-		for(int i = p.length-1; i > 0; i--){
-			int target = (int)(Math.random()*(i+1));
-			int temp = p[i];
-			p[i] = p[target];
-			p[target] = temp;
-		}
-	}
-
 	static int[] perlin_generate_perm(){
 		int[] p = new int[256];
 		for(int i = 0; i<256; i++){
 			p[i] = i;
 		}
-		permute(p);
+		Utilities.permute(p);
 		return p;
 	}
 

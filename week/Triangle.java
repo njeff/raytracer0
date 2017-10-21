@@ -68,12 +68,12 @@ public class Triangle extends Hittable{
 
 		rec.t = t;
 		rec.p = p;
+		rec.h = this;
 		if(n_dot_dir > 0){ //if double sided and intersected from the "not normal side"
 			rec.normal = normal.mul(-1);
 		} else {
 			rec.normal = normal;
 		}
-		
 		rec.mat = m;
 		return true;
 	}

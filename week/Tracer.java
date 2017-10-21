@@ -11,19 +11,29 @@ public class Tracer{
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.pot();
-		Camera cam = Scenes.potCam(nx,ny);
+		HittableList world = Scenes.poke();
+		Camera cam = Scenes.pokeCam(nx,ny);
 
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
 			final int jj = j;
 			IntStream.range(0, nx).parallel().forEach(i->{ //parallelize
 			    Vec3 col = new Vec3(0,0,0);
+			    //Latin hypercube sampling to get more evenly distributed samples
+			    //See pbrt Chapter 7 available free online
+			    double delta = 1.0/ns; //width of each cell
+			    double[] hs = new double[ns];
+			    double[] vs = new double[ns];
+			    for(int s = 0; s<ns; s++){ //generate random positions
+			    	hs[s] = (s+Math.random())*delta;
+			    	vs[s] = (s+Math.random())*delta;
+			    }
+			    Utilities.permute(hs);
+			    Utilities.permute(vs);
 				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
-					double u = (i+Math.random())/nx;
-					double v = (jj+Math.random())/ny;
+					double u = (i+hs[s])/nx;
+					double v = (jj+vs[s])/ny;
 					Ray r = cam.get_ray(u,v);
-					//Vec3 p = r.point_at_parameter(2.0);
 					col = col.add(color(r,world,0));
 				}
 				col = col.div(ns);

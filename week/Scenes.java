@@ -111,7 +111,9 @@ public class Scenes{
 		list[i++] = new Sphere(new Vec3(0,1,1),0.1, white);
 		list[i++] = new Sphere(new Vec3(0,1,0),0.1, white);
 		//return new HittableList(list,i);
-		return new BVHNode(list,0,i,0,1);
+		BVHNode bn = new BVHNode(list,0,i,0,1);
+		System.out.println(bn);
+		return bn;
 	}
 
 	static Camera triCam(int nx, int ny){
@@ -159,6 +161,44 @@ public class Scenes{
 	//camera setup for the magnolia
 	static Camera magCam(int nx, int ny){
 		Vec3 lookfrom = new Vec3(10,-120,20);
+		Vec3 lookat = new Vec3(0,0,0);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
+	}
+
+	static HittableList poke(){
+		Hittable[] list = new Hittable[3];
+		StlLoad st = new StlLoad("../objects/pokemon.stl", new Lambertian(new ConstantTexture(new Vec3(0.5, 0.5, 0.5))));
+		int i = 0;
+		list[i++] = st.objectBVH();
+		list[i++] = new FlipNormals(new XYRect(-10000, 100, -500, 100, 40, new Metal(new Vec3(0.58,0.82,1), 0)));
+		list[i++] = new XYRect(-100, 100, -100, 100, -150, new DiffuseLight(new ConstantTexture(new Vec3(5,5,5))));
+		return new HittableList(list,i);
+	}
+
+	static Camera pokeCam(int nx, int ny){
+		Vec3 lookfrom = new Vec3(20,80,-20);
+		Vec3 lookat = new Vec3(0,0,0);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,-1), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
+	}
+
+	static HittableList turner(){
+		Hittable[] list = new Hittable[3];
+		StlLoad st = new StlLoad("../objects/Turners Cube.stl", new Lambertian(new ConstantTexture(new Vec3(0.5, 0.5, 0.5))));
+		int i = 0;
+		list[i++] = st.objectBVH();
+		//list[i++] = new FlipNormals(new XYRect(-10000, 100, -500, 100, 40, new Metal(new Vec3(0.58,0.82,1), 0)));
+		//list[i++] = new XYRect(-100, 100, -100, 100, -150, new DiffuseLight(new ConstantTexture(new Vec3(5,5,5))));
+		return new HittableList(list,i);
+	}
+
+	static Camera turnerCam(int nx, int ny){
+		Vec3 lookfrom = new Vec3(200,150,150);
 		Vec3 lookat = new Vec3(0,0,0);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;

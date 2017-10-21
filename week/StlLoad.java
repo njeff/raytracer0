@@ -24,7 +24,7 @@ public class StlLoad{
 				Path fileLocation = Paths.get(path);
 				byte[] data = Files.readAllBytes(fileLocation);
 				DataInputStream din = new DataInputStream(new ByteArrayInputStream(data));
-				din.skipBytes(80);//skip first 80 bytes of header
+				din.skipBytes(80); //skip first 80 bytes of header
 
 				int numt = Integer.reverseBytes(din.readInt()); //get number of triangles
 				Vec3[] vertices = new Vec3[3];
@@ -47,8 +47,7 @@ public class StlLoad{
 						vertices[j] = new Vec3(components[0],components[1],components[2]);
 					}
 					din.skipBytes(2); //skip attributes
-					Triangle t = new Triangle(vertices[0],vertices[1],vertices[2],material);
-					list.add(t);
+					list.add(new Triangle(vertices[0],vertices[1],vertices[2],material));
 				}
 				
 			} else { //is ASCII

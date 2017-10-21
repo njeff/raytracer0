@@ -8,7 +8,7 @@ I think the issue might lie in the bounding box of the rotate Hittable though.
 public class BVHNode extends HittableList{
 	AABB box;
 	Hittable left, right;
-	int lower, upper;
+	int lower, upper, axis;
 
 	public BVHNode() {}
 
@@ -22,7 +22,32 @@ public class BVHNode extends HittableList{
 	public BVHNode(Hittable[] l, int lower, int upper, double time0, double time1){
 		this.lower = lower;
 		this.upper = upper;
-		int axis = (int)(Math.random()*3); //randomly sort on an axis
+
+		//sort on axis where object centroid have largest range
+		Vec3 lowerCentroid = new Vec3();
+		Vec3 upperCentroid = new Vec3();
+		AABB tempBox = new AABB();
+		for(int i = lower; i<upper; i++){
+			if(l[i].bounding_box(time0, time1, tempBox)){
+				Vec3 centroid = tempBox.max().add(tempBox.min()).div(2);
+				for(int j = 0; j<3; j++){
+					if(centroid.get(j) < lowerCentroid.e[j]){
+						lowerCentroid.e[j] = centroid.get(j);
+					}
+					if(centroid.get(j) > upperCentroid.e[j]){
+						upperCentroid.e[j] = centroid.get(j);
+					}
+				}
+			}
+		}
+		Vec3 cRange = upperCentroid.sub(lowerCentroid);
+		axis = 0;
+		for(int i = 0; i<3; i++){
+			if(cRange.get(i) > cRange.get(axis)){
+				axis = i;
+			}
+		}
+
 		if(axis == 0){
 			Arrays.sort(l, lower, upper, new SortBoxX());
 		} else if(axis == 1){
@@ -83,9 +108,9 @@ public class BVHNode extends HittableList{
 
 	public String toString(){
 		if(upper-lower <= 2){
-			return "n: " + box.toString();
+			return "l: " + left.toString() + " r: " + right.toString();
 		} else{
-			return "n: " + box.toString() + "\n[" + left.toString() + "-|-" + right.toString() + "]";
+			return "n: " + (upper-lower) + "\n[" + left.toString() + "-|-" + right.toString() + "]";
 		}
 	}
 }

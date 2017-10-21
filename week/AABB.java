@@ -13,14 +13,21 @@ public class AABB{
 	Vec3 max(){return _max;}
 
 	boolean hit(Ray r, double tmin, double tmax){
+		//solve along each component
 		for(int a = 0; a < 3; a++){
+			//check both extremes
 			double t0 = Math.min((_min.get(a) - r.origin().get(a))/r.direction().get(a),
 				(_max.get(a)-r.origin().get(a))/r.direction().get(a));
 			double t1 = Math.max((_min.get(a) - r.origin().get(a))/r.direction().get(a),
 				(_max.get(a)-r.origin().get(a))/r.direction().get(a));
+			//look for minimum t for intersection
 			tmin = Math.max(t0, tmin);
+			//look for maxmimum t for intersection
 			tmax = Math.min(t1, tmax);
-			if(tmax <= tmin){
+			//if any component has a minimum t required for intersection 
+			//that surpasses the max for the intersection of another
+			//return no intersection
+			if(tmax < tmin){
 				return false;
 			}
 		}

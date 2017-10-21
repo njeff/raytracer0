@@ -8,7 +8,7 @@ public class HitRecord{
 	Hittable h;
 	double u, v;
 
-	//get pass problem with java not being able to properly pass by refernce
+	//get pass problem with java not being able to properly pass by reference
 	public void set(HitRecord hr){
 		t = hr.t;
 		p = hr.p;
