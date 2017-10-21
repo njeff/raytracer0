@@ -32,15 +32,16 @@ public class HittableList extends Hittable{
 		if(list_size < 1) return false;
 		AABB temp_box = new AABB();
 		boolean first_true = list[0].bounding_box(t0, t1, temp_box);
-		if(!first_true){
+		if(!first_true){ //check if at least one thing has a box
 			return false;
 		} else {
 			box.set(temp_box);
 		}
 		for(int i = 1; i < list_size; i++){
-			if(list[0].bounding_box(t0, t1, temp_box)){
+			if(list[i].bounding_box(t0, t1, temp_box)){
+				//enlarge box as necessary
 				box.set(Utilities.surrounding_box(box, temp_box));
-			} else {
+			} else { //if at anytime something doesnt have a box
 				return false;
 			}
 		}

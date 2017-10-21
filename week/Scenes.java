@@ -152,7 +152,7 @@ public class Scenes{
 		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
 		StlLoad stl = new StlLoad("../objects/magnolia.stl", light_yellow);
 		int i = 0;
-		list[i++] = stl.objectHL();
+		list[i++] = stl.objectBVH();
 		return new HittableList(list,i);
 	}
 

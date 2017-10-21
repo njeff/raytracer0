@@ -22,7 +22,7 @@ public class BVHNode extends HittableList{
 	public BVHNode(Hittable[] l, int lower, int upper, double time0, double time1){
 		this.lower = lower;
 		this.upper = upper;
-		int axis = (int)(Math.random()*3);
+		int axis = (int)(Math.random()*3); //randomly sort on an axis
 		if(axis == 0){
 			Arrays.sort(l, lower, upper, new SortBoxX());
 		} else if(axis == 1){
@@ -37,7 +37,8 @@ public class BVHNode extends HittableList{
 			left = l[lower];
 			right = l[lower+1];
 		} else {
-			left = new BVHNode(l, lower, (upper+lower)/2, time0, time1); //not sure if this will work
+			//build tree
+			left = new BVHNode(l, lower, (upper+lower)/2, time0, time1);
 			right = new BVHNode(l, (upper+lower)/2, upper, time0, time1);
 		}
 		AABB box_left = new AABB();
@@ -82,9 +83,9 @@ public class BVHNode extends HittableList{
 
 	public String toString(){
 		if(upper-lower <= 2){
-			return box.toString();
+			return "n: " + box.toString();
 		} else{
-			return box.toString() + "\n[" + left.toString() + " | " + right.toString() + "]";
+			return "n: " + box.toString() + "\n[" + left.toString() + "-|-" + right.toString() + "]";
 		}
 	}
 }

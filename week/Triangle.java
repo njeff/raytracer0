@@ -2,6 +2,7 @@
 public class Triangle extends Hittable{
 	Vec3 p0, p1, p2, normal;
 	Material m;
+	boolean double_side = false;
 
 	public Triangle() {}
 	
@@ -10,26 +11,46 @@ public class Triangle extends Hittable{
 	* @param _p1 second vertex
 	* @param _p2 third vertex
 	* @param mat material
+	* @param ds if the triangle is double sided
 	* The outward normal of the triangle is computed with the right hand rule with the vertices counterclockwise
 	*/
-	public Triangle(Vec3 _p0, Vec3 _p1, Vec3 _p2, Material mat){
+	public Triangle(Vec3 _p0, Vec3 _p1, Vec3 _p2, Material mat, boolean ds){
 		p0 = _p0;
 		p1 = _p1;
 		p2 = _p2;
 		normal = Vec3.unit_vector(Vec3.cross(p1.sub(p0),p2.sub(p1))); //use right hand rule, assuming vertices are listed counterclockwise
 		m = mat;
+		double_side = ds;
+	}
+
+	public Triangle(Vec3 _p0, Vec3 _p1, Vec3 _p2, Material mat){
+		p0 = _p0;
+		p1 = _p1;
+		p2 = _p2;
+		normal = Vec3.unit_vector(Vec3.cross(p1.sub(p0),p2.sub(p1)));
+		m = mat;
 	}
 
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){
 		double n_dot_dir = Vec3.dot(r.direction(),normal);
-		if(Math.abs(n_dot_dir) < 0.0001) return false; //ray parallel to triangle can't hit
+		if(n_dot_dir > 0 && !double_side) return false;
+		if(Math.abs(n_dot_dir) < 0.00001) return false; //ray parallel to triangle can't hit
 
 		//find the ray plane intersection first
 		double d = -Vec3.dot(normal,p0); //Use p0 and the equation Ax + By + Cz + D = 0, where N = <A, B, C> to find D
 		double t = -(Vec3.dot(normal,r.origin()) + d)/n_dot_dir; //Solve for t in A(p) + B(p) + C)p + D = 0, where p = origin + dir * t
 		//System.out.println("t: " + t);
 
-		if(t < t_min || t > t_max) return false;
+		if(t < t_min || t > t_max){
+			if(double_side){ //if double sided negate
+				t = -t;
+				if(t < t_min || t > t_max){ //and test again
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
 		Vec3 p = r.point_at_parameter(t);
 
 		Vec3 s1 = p1.sub(p0); //get the first side
@@ -47,7 +68,12 @@ public class Triangle extends Hittable{
 
 		rec.t = t;
 		rec.p = p;
-		rec.normal = normal;
+		if(n_dot_dir > 0){ //if double sided and intersected from the "not normal side"
+			rec.normal = normal.mul(-1);
+		} else {
+			rec.normal = normal;
+		}
+		
 		rec.mat = m;
 		return true;
 	}
@@ -61,8 +87,6 @@ public class Triangle extends Hittable{
 		min.e[0] = Math.min(p0.x(),Math.min(p1.x(),p2.x()));
 		min.e[1] = Math.min(p0.y(),Math.min(p1.y(),p2.y()));
 		min.e[2] = Math.min(p0.z(),Math.min(p1.z(),p2.z()));
-		//System.out.println(min);
-		//System.out.println(max);
 		box.set(new AABB(min,max));
 		return true;
 	}

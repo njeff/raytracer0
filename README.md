@@ -5,7 +5,7 @@ This is a Java implementation of the raytracer from the book *Ray Tracing in One
 Why in Java? When I followed the first book I was trying to better learn Java and didn't want to copy paste (already knew C++ better too). Turns out the lack of operator overloading and pointers also gets really gross. 
 
 The initial raytracer with my modifications is found in the `weekend` folder.
-My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and ASCII STL file loading to render more complicated objects. I think the bounding volume hierarchies are working, but the bounding box code for the `Rotate` Hittable is not right. I get different, usually incorrect renders each time I run a scene with it.
+My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and STL file loading to render more complicated objects. I think the bounding volume hierarchies are mostly working, however, some objects do not render correctly/at all. There might be an issue with the `Rotate` class and its bounding box too.
 
 The models in the `objects` folder are from ![this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The earth and moon textures in `textures` were the first ones that showed up when I Googled.
 

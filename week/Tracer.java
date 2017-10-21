@@ -10,9 +10,9 @@ public class Tracer{
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
-		
-		HittableList world = Scenes.cornell_box();
-		Camera cam = Scenes.cornellCam(nx,ny);
+
+		HittableList world = Scenes.pot();
+		Camera cam = Scenes.potCam(nx,ny);
 
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -58,11 +58,11 @@ public class Tracer{
 			}
 		} else {
 			//background acts a large light source
-			// Vec3 unit_dir = Vec3.unit_vector(r.direction());
-			// double t = 0.5*(unit_dir.y() + 1.0);
-			// return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
+			Vec3 unit_dir = Vec3.unit_vector(r.direction());
+			double t = 0.5*(unit_dir.y() + 1.0);
+			return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
 			//or all black
-			return new Vec3(0,0,0);
+			//return new Vec3(0,0,0);
 		}
 	}
 }
