@@ -1,4 +1,6 @@
-//volumetric material
+/**
+* Volumetric material
+*/
 public class ConstantMedium extends Hittable{
 	Hittable boundary;
 	double density;

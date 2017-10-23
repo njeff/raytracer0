@@ -1,4 +1,6 @@
-//creates a camera in 3D
+/**
+* Creates a camera in 3D
+*/
 public class Camera{
 	Vec3 origin;
 	Vec3 lower_left_corner;

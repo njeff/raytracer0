@@ -1,4 +1,6 @@
-//triangle Hittable (no thickness)
+/**
+* Triangle Hittable (no thickness)
+*/
 public class Triangle extends Hittable{
 	Vec3 p0, p1, p2, normal;
 	Material m;
@@ -11,7 +13,10 @@ public class Triangle extends Hittable{
 	* @param _p1 second vertex
 	* @param _p2 third vertex
 	* @param mat material
-	* @param ds if the triangle is double sided
+	* @param ds if the triangle is double sided 
+	* (need to fix issues with double sided: I think that when a point on the surface that just made impact ends up 
+	* slightly behind the triangle due to floating point stuff, the reflected ray hits the back side and gets stuck 
+	* in closed surfaces, causing random blacks spots)
 	* The outward normal of the triangle is computed with the right hand rule with the vertices counterclockwise
 	*/
 	public Triangle(Vec3 _p0, Vec3 _p1, Vec3 _p2, Material mat, boolean ds){

@@ -1,4 +1,7 @@
-//File with test scenes for the raytracer
+/**
+* Test scenes for the raytracer
+* Scenes that have the accel parameter determine if the accelerated or nonaccelerated hit structure is used
+*/
 public class Scenes{
 	//generates a random scene of spheres, like the cover of the book
 	static HittableList random_scene(){
@@ -60,7 +63,7 @@ public class Scenes{
 	}
 
 	//Cornell box
-	static HittableList cornell_box(){
+	static HittableList cornell_box(boolean accel){
 		Hittable[] list = new Hittable[10];
 		int i = 0;
 		Material red = new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)));
@@ -79,12 +82,18 @@ public class Scenes{
 		Hittable b2 = new Translate(new Rotate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.X), 15, Rotate.Y), new Vec3(265, 0, 295));
 		list[i++] = b1;
 		list[i++] = b2;
+		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
+		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
 		//list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
 		list[i++] = new Sphere(new Vec3(400,60,70),60.0, new Dielectric(new Vec3(1,1,1),1.5));
 		list[i++] = new Sphere(new Vec3(150,350,300),50.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
 		
-		return new BVHNode(list, 0, i, 0, 1);
+		if(accel){
+			return new BVHNode(list, 0, i, 0, 1);
+		} else {
+			return new HittableList(list,i);
+		}
 	}
 
 	static Camera cornellCam(int nx, int ny){
@@ -96,7 +105,7 @@ public class Scenes{
 	}
 
 	//triangle debugging scene
-	static HittableList triangles(){
+	static HittableList triangles(boolean accel){
 		Hittable[] list = new Hittable[6];
 		int i = 0;
 		Material black = new Lambertian(new ConstantTexture(new Vec3(0.1, 0.1, 0.1)));
@@ -111,9 +120,13 @@ public class Scenes{
 		list[i++] = new Sphere(new Vec3(0,1,1),0.1, white);
 		list[i++] = new Sphere(new Vec3(0,1,0),0.1, white);
 		//return new HittableList(list,i);
-		BVHNode bn = new BVHNode(list,0,i,0,1);
-		System.out.println(bn);
-		return bn;
+		if(accel){
+			BVHNode bn = new BVHNode(list,0,i,0,1);
+			System.out.println(bn);
+			return bn;
+		} else {
+			return new HittableList(list,i);
+		}
 	}
 
 	static Camera triCam(int nx, int ny){
@@ -148,13 +161,17 @@ public class Scenes{
 	}
 
 	//renders a magnolia (one of the surface normals is off I think)
-	static HittableList magnolia(){
+	static HittableList magnolia(boolean accel){
 		Hittable[] list = new Hittable[1];
 		Material light_yellow = new Metal(new Vec3(1,0.99,0.8), 0.1);
 		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
 		StlLoad stl = new StlLoad("../objects/magnolia.stl", light_yellow);
 		int i = 0;
-		list[i++] = stl.objectBVH();
+		if(accel){
+			list[i++] = stl.objectBVH();
+		} else {
+			list[i++] = stl.objectHL();
+		}
 		return new HittableList(list,i);
 	}
 
@@ -168,11 +185,15 @@ public class Scenes{
 		return cam;
 	}
 
-	static HittableList poke(){
+	static HittableList poke(boolean accel){
 		Hittable[] list = new Hittable[3];
 		StlLoad st = new StlLoad("../objects/pokemon.stl", new Lambertian(new ConstantTexture(new Vec3(0.5, 0.5, 0.5))));
 		int i = 0;
-		list[i++] = st.objectBVH();
+		if(accel){
+			list[i++] = st.objectBVH();
+		} else {
+			list[i++] = st.objectHL();
+		}
 		list[i++] = new FlipNormals(new XYRect(-10000, 100, -500, 100, 40, new Metal(new Vec3(0.58,0.82,1), 0)));
 		list[i++] = new XYRect(-100, 100, -100, 100, -150, new DiffuseLight(new ConstantTexture(new Vec3(5,5,5))));
 		return new HittableList(list,i);
@@ -180,7 +201,7 @@ public class Scenes{
 
 	static Camera pokeCam(int nx, int ny){
 		Vec3 lookfrom = new Vec3(20,80,-20);
-		Vec3 lookat = new Vec3(0,0,0);
+		Vec3 lookat = new Vec3(0,0,-10);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,-1), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);

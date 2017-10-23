@@ -2,17 +2,19 @@
 
 This is a Java implementation of the raytracer from the book *Ray Tracing in One Weekend* by Peter Shirley. I added texture mapping for the spheres and light emitters.
 
-Why in Java? When I followed the first book I was trying to better learn Java and didn't want to copy paste (already knew C++ better too). Turns out the lack of operator overloading and pointers also gets really gross. 
+Why in Java and not C++? Why go with something slower and more memory hungry? When I followed the first book I was trying to better learn Java and didn't want to copy paste (already knew C++ better then too, but now I'm probably bad at C++). Turns out the lack of operator overloading and pointers also gets really gross. 
 
 The initial raytracer with my modifications is found in the `weekend` folder.
-My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and STL file loading to render more complicated objects. I think the bounding volume hierarchies are mostly working, however, some objects do not render correctly/at all. There might be an issue with the `Rotate` class and its bounding box too.
+My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and STL file loading to render more complicated objects. The bounding volume hierarchies are really nice and are necessary for high polygon count STLs. I still need to find ways to make this raytracer more efficient and am reading up more on other raytracers and lighting algorithms.
 
-The cube, magnolia, sphere, and teapot models in the `objects` folder are from ![this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The ![Pokeball](https://grabcad.com/library/pokemon-with-magnemite-1) and ![Turners Cube](https://grabcad.com/library/turners-cube-6) are from GrabCad. The earth and moon textures in `textures` were the first ones that showed up when I Googled.
+The cube, magnolia, sphere, and teapot models in the `objects` folder are from [this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The [Pokeball](https://grabcad.com/library/pokemon-with-magnemite-1) and [Turners Cube](https://grabcad.com/library/turners-cube-6) are from GrabCad. The earth and moon textures in `textures` were the first ones that showed up when I Googled.
 
 ## How to use this program
-The file `Tracer.java` has the `main` for this raytracer. You can set the x and y resolution of the output with `nx` and `ny` and the number of samples per pixel with `ns`. Set `world` to a `HittableList` of the objects you want to render and `cam` to the camera you want to render the scene from. Inside the `color` method you can change the max recursion depth, but after about 5-10 bounces most images don't change very much. When working with light sources and a black background (background emits no light), the number of samples per pixel needed to get a fairly clean image is usually around 10,000. However, this is very computationally intense and can take quite a bit of time to fully render.
+The file `Tracer.java` has the `main` for this raytracer. You can set the x and y resolution of the output with `nx` and `ny` and the number of samples per pixel with `ns`. Set `world` to a `HittableList` of the objects you want to render and `cam` to the camera you want to render the scene from. The `MAX_DEPTH` value sets the max recursion depth for the `color` method. After about 5-10 bounces most images don't change very much so don't set this too high (especially with many mirror surfaces). When working with light sources and a black background (background emits no light), the number of samples per pixel needed to get a fairly clean image is usually around 10,000. However, this is very computationally intense and can take quite a bit of time to fully render.
 
 During the rendering process, the intermediate image is displayed in a `DrawingPanel` (which was borrowed from APCS) one row at a time. You can save the output image from here or just use `ImageIO.save` to save the `BufferedImage` in the program.
+
+The file `AccelTester.java` can be used to test if two scenes have the same intersection properties. This is useful for testing if the implementation of acceleration structures like the BVH actually work. It generates random rays in the bounding box of the scene, and checks that they have the same intersection properties.
 
 `TracerV.java` was used to render a video using the first version of the raytracer. The camera was moved as a function of time and each rendered frame was then put together into a final video using ImageMagick. There is an example below.
 
@@ -36,4 +38,14 @@ During the rendering process, the intermediate image is displayed in a `DrawingP
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/box_scene.png" alt="A bit of everything." width="700px"/>
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/pot_metal.png" alt="STL sample." width="700px">
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/pokeball2.png" alt="Pokeball." width="700px">
 </p>
+
+### Log
+- Trying to fix the BVH, for some reason the Cornell Box scene doesn't render correctly most of the time (see the samples in `samples/buggy`) and triangles in my triangle test scene don't render consistently (sometimes no triangles or only one of the two show up). When I load STL files I also get weird missing triangles that change every time I run the same render. The only randomness could be from choosing which axis to split on.
+- When I looked at the two triangle test scene's BVH tree structure during different trials, I noticed that any time the two triangles were children of the same node, they both didn't show up. Only one showes up if one is in a node on its own (occupies both children) and the other is with a sphere. Both show up when they are in their own nodes with a sphere (don't occupy both children).
+- Updated the axis splitting algorithm to find the axis that had the largest range of the centroids of the objects in the list. I no longer get missing triangles (still trying to figure out why they disappeared). However, my modified Cornell box still doesn't render correctly with the BVH.
+- I wrote a simple scene tester in `AccelTester.java` to see if two scenes have the same intersection properties. It randomly generates rays in the bounding box of the scene and tests to see if they have the same intersections in both scenes. By loading up one scene with the non-accelerated `HittableList` and the other with the `BVHNode`, I can see where any errors could arise.
+- Changing the Cornell Box scene to just have the boxes rotated on the y-axis passes the acceleration tester. My modified scene with the box rotated on multiple axes doesn't. Time to fix the `Rotate` class's bounding boxes.
+- Turns out I had some wrong signs in the rotation transform. Doh.

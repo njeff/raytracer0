@@ -1,5 +1,7 @@
-//vector class used for position and color
-
+/**
+* 3 component vector class 
+* Used for position and color
+*/
 public class Vec3{
 	double[] e = new double[3];
 	public Vec3(){}
@@ -85,6 +87,10 @@ public class Vec3{
 	}
 
 	public String toString(){
-		return e[0] + " " + e[1] + " " + e[2];
+		return "<" + e[0] + ", " + e[1] + ", " + e[2] + ">";
+	}
+
+	public boolean equals(Vec3 v2){
+		return e[0] == v2.e[0] && e[1] == v2.e[1] && e[2] == v2.e[2];
 	}
 }

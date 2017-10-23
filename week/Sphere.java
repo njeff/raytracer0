@@ -1,3 +1,6 @@
+/**
+* Sphere Hittable
+*/
 public class Sphere extends Hittable{
 	Vec3 center;
 	double radius;

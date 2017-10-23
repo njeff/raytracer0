@@ -1,9 +1,17 @@
-//axis aligned box
+/**
+* Axis aligned box
+*/
 public class Box extends Hittable{
 	Vec3 pmin, pmax;
 	HittableList hlist;
 
 	public Box() {}
+
+	/**
+	* @param p0 Minimum corner of box
+	* @param p1 Maximum corner of box
+	* @param mat material
+	*/
 	public Box(Vec3 p0, Vec3 p1, Material mat){
 		pmin = p0;
 		pmax = p1;

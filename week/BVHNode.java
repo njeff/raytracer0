@@ -1,9 +1,7 @@
 import java.util.Arrays;
 
-/*
-Designed to accelerate ray object collision detection by putting objects into a binary tree of enclosing bounding boxes
-There are currently some issues with this causing improper rendering. 
-I think the issue might lie in the bounding box of the rotate Hittable though.
+/**
+* Designed to accelerate ray object collision detection by putting objects into a binary tree of enclosing bounding boxes
 */
 public class BVHNode extends HittableList{
 	AABB box;
@@ -23,7 +21,7 @@ public class BVHNode extends HittableList{
 		this.lower = lower;
 		this.upper = upper;
 
-		//sort on axis where object centroid have largest range
+		//sort on axis where object centroids have largest range
 		Vec3 lowerCentroid = new Vec3();
 		Vec3 upperCentroid = new Vec3();
 		AABB tempBox = new AABB();

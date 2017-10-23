@@ -1,4 +1,6 @@
-//all axis aligned planes
+/**
+* All axis aligned planes
+*/
 //XY rectangle
 public class XYRect extends Hittable{
 	double x0, x1, y0, y1, k;
@@ -39,6 +41,7 @@ public class XYRect extends Hittable{
 		rec.mat = mp;
 		rec.p = r.point_at_parameter(t);
 		rec.normal = new Vec3(0,0,1);
+		rec.h = this;
 		return true;
 	}
 
@@ -80,6 +83,7 @@ class XZRect extends Hittable{
 		rec.mat = mp;
 		rec.p = r.point_at_parameter(t);
 		rec.normal = new Vec3(0,1,0);
+		rec.h = this;
 		return true;
 	}
 
@@ -121,6 +125,7 @@ class YZRect extends Hittable{
 		rec.mat = mp;
 		rec.p = r.point_at_parameter(t);
 		rec.normal = new Vec3(1,0,0);
+		rec.h = this;
 		return true;
 	}
 

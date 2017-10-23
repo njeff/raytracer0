@@ -1,4 +1,6 @@
-//axis aligned bounding box
+/**
+* Axis aligned bounding box
+*/
 public class AABB{
 	Vec3 _min, _max;
 
