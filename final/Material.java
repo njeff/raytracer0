@@ -11,12 +11,16 @@ public abstract class Material{
 	* @param attenuation change in light after hit
 	* @param scattered ray returned after hitting this material
 	*/
-	public abstract boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered);
+	public abstract boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf);
+
+	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
+		return 0;
+	}
 	
 	/**
 	* Used for light sources
 	*/
-	public Vec3 emitted(double u, double v, Vec3 p){
+	public Vec3 emitted(Ray r_in, HitRecord rec, double u, double v, Vec3 p){
 		return new Vec3(0,0,0);
 	}
 }
@@ -27,10 +31,20 @@ class Lambertian extends Material{
 	public Lambertian(Texture a){
 		albedo = a;
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
-		Vec3 target = rec.p.add(rec.normal).add(Utilities.random_in_unit_sphere()); //random scatter
-		scattered.set(new Ray(rec.p, target.sub(rec.p), r_in.time()));
+
+	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
+		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
+		if(cosine < 0) cosine = 0; //if not in hemisphere
+		return cosine/Math.PI;
+	}
+
+	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf){
+		ONB uvw = new ONB();
+		uvw.buildFromW(rec.normal);
+		Vec3 direction = uvw.local(Utilities.random_cosine_direction());
+		scattered.set(new Ray(rec.p, Vec3.unit_vector(direction), r_in.time()));
 		attentuation.set(albedo.value(rec.u, rec.v, rec.p));
+		pdf.set(Vec3.dot(uvw.w(),scattered.direction())/Math.PI);
 		return true;
 	}
 }
@@ -47,7 +61,8 @@ class Metal extends Material{
 			fuzz = 1;
 		}
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
+
+	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf){
 		Vec3 reflected = Utilities.reflect(Vec3.unit_vector(r_in.direction()),rec.normal);
 		scattered.set(new Ray(rec.p, reflected.add(Utilities.random_in_unit_sphere().mul(fuzz))));
 		attentuation.set(albedo);
@@ -64,7 +79,7 @@ class Dielectric extends Material{
 		ref_idx = ri;
 	}
 
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
+	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf){
 		Vec3 outward_normal;
 		Vec3 reflected = Utilities.reflect(r_in.direction(), rec.normal);
 		double ni_over_nt;
@@ -105,11 +120,15 @@ class DiffuseLight extends Material{
 	public DiffuseLight(Texture a){
 		emit = a;
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
+	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf){
 		return false;
 	}
-	public Vec3 emitted(double u, double v, Vec3 p){
-		return emit.value(u,v,p);
+	public Vec3 emitted(Ray r_in, HitRecord rec, double u, double v, Vec3 p){
+		if(Vec3.dot(rec.normal, r_in.direction()) < 0){ //incident ray and normal must be in opposite directions
+			return emit.value(u,v,p);
+		} else {
+			return new Vec3(0,0,0);
+		}
 	}
 }
 
@@ -119,7 +138,7 @@ class Isotropic extends Material{
 	public Isotropic(Texture a){
 		albedo = a;
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
+	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered, DoubleP pdf){
 		//isotropic scatters in all directions
 		scattered.set(new Ray(rec.p, Utilities.random_in_unit_sphere()));
 		attentuation.set(albedo.value(rec.u, rec.v, rec.p));

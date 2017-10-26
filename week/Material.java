@@ -29,7 +29,7 @@ class Lambertian extends Material{
 	}
 	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attentuation, Ray scattered){
 		Vec3 target = rec.p.add(rec.normal).add(Utilities.random_in_unit_sphere()); //random scatter
-		scattered.set(new Ray(rec.p, target.sub(rec.p), r_in.time()));
+		scattered.set(new Ray(rec.p, Vec3.unit_vector(target.sub(rec.p)), r_in.time()));
 		attentuation.set(albedo.value(rec.u, rec.v, rec.p));
 		return true;
 	}

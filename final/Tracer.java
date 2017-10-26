@@ -7,17 +7,17 @@ import java.util.stream.*;
 */
 public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
-	public static final int nx = 600; //output resolution
-	public static final int ny = 400;
-	public static final int ns = 150; //samples per pixel
+	public static final int nx = 500; //output resolution
+	public static final int ny = 500;
+	public static final int ns = 100; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.poke(true);
-		Camera cam = Scenes.pokeCam(nx,ny);
+		HittableList world = Scenes.cornell_box(true);
+		Camera cam = Scenes.cornellCam(nx,ny);
 
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -36,6 +36,7 @@ public class Tracer{
 				}
 				Utilities.permute(hs);
 				Utilities.permute(vs);
+
 				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
 					double u = (i+hs[s])/nx;
 					double v = (jj+vs[s])/ny;
@@ -66,9 +67,26 @@ public class Tracer{
 		if(world.hit(r,0.001,Double.MAX_VALUE,rec)){ //intersect with list of objects
 			Ray scattered = new Ray();
 			Vec3 attenuation = new Vec3();
-			Vec3 emitted = rec.mat.emitted(rec.u, rec.v, rec.p);
-			if(depth < MAX_DEPTH && rec.mat.scatter(r,rec,attenuation,scattered)){ //if we haven't recursed beyond max depth and there is an impact
-				return color(scattered,world,depth+1).mul(attenuation).add(emitted); //rendering equation
+			Vec3 emitted = rec.mat.emitted(r, rec, rec.u, rec.v, rec.p);
+			DoubleP pdf = new DoubleP();
+			if(depth < MAX_DEPTH && rec.mat.scatter(r,rec,attenuation,scattered,pdf)){ //if we haven't recursed beyond max depth and there is an impact
+				//hack some lighting pdf
+				Vec3 onlight = new Vec3(213 + Math.random()*(343-213), 554, 227 + Math.random()*(332-227));
+				Vec3 tolight = onlight.sub(rec.p);
+				double distanceSquared = tolight.squared_length();
+				tolight.unit();
+				if(Vec3.dot(tolight,rec.normal) < 0){
+					return emitted;
+				}
+				double lightarea = (343-213)*(332-227);
+				double lightcosine = Math.abs(tolight.y());
+				if(lightcosine < 0.000001){
+					return emitted;
+				}
+				pdf.set(distanceSquared/(lightcosine*lightarea));
+				scattered.set(new Ray(rec.p, tolight, r.time()));
+				
+				return color(scattered, world, depth+1).mul(attenuation).mul(rec.mat.scatteringPDF(r, rec, scattered)).div(pdf.v).add(emitted); //rendering equation
 			} else {
 				return emitted;
 			}

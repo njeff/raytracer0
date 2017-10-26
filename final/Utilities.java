@@ -11,6 +11,30 @@ public class Utilities{
 	}
 
 	/**
+	* returns a random vector on the unit sphere
+	*/
+	static Vec3 random_on_unit_sphere(){
+		Vec3 p;
+		do{
+			p = new Vec3(Math.random(),Math.random(),Math.random()).mul(2).sub(new Vec3(1,1,1));
+		} while(p.squared_length() >= 1.0);
+		return Vec3.unit_vector(p);
+	}
+
+	/**
+	* generate random directions weighted by cosine
+	*/
+	static Vec3 random_cosine_direction(){
+		double r1 = Math.random();
+		double r2 = Math.random();
+		double z = Math.sqrt(1-r2);
+		double phi = 2*Math.PI*r1; //random phi around sphere
+		double x = Math.cos(phi)*2*Math.sqrt(r2);
+		double y = Math.sin(phi)*2*Math.sqrt(r2);
+		return new Vec3(x, y, z);
+	}
+
+	/**
 	* @param v direction of the incidence vector
 	* @param n normal of the surface
 	*/
@@ -80,5 +104,17 @@ public class Utilities{
 			p[i] = p[target];
 			p[target] = temp;
 		}
+	}
+}
+
+//for passing around doubles (this is jank)
+class DoubleP{
+	double v = 0;
+	public DoubleP(){}
+	public DoubleP(double a){
+		v = a;
+	}
+	public void set(double a){
+		v = a;
 	}
 }
