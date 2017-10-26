@@ -1,4 +1,4 @@
-# Raytracing in One Weekend and the Next Week
+# Raytracing in One Weekend, the Next Week, and the Rest of Your Life
 
 This is a Java implementation of the raytracer from the book *Ray Tracing in One Weekend* by Peter Shirley. I added texture mapping for the spheres and light emitters.
 
@@ -6,6 +6,8 @@ Why in Java and not C++? Why go with something slower and more memory hungry? Wh
 
 The initial raytracer with my modifications is found in the `weekend` folder.
 My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and STL file loading to render more complicated objects. The bounding volume hierarchies are really nice and are necessary for high polygon count STLs. I still need to find ways to make this raytracer more efficient and am reading up more on other raytracers and lighting algorithms.
+
+I've just gotten the third book in the series. Time to read that along with the other articles I've been trawling.
 
 The cube, magnolia, sphere, and teapot models in the `objects` folder are from [this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The [Pokeball](https://grabcad.com/library/pokemon-with-magnemite-1) and [Turners Cube](https://grabcad.com/library/turners-cube-6) are from GrabCad. The earth and moon textures in `textures` were the first ones that showed up when I Googled.
 
@@ -41,11 +43,3 @@ The file `AccelTester.java` can be used to test if two scenes have the same inte
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/pokeball2.png" alt="Pokeball." width="700px">
 </p>
-
-### Log
-- Trying to fix the BVH, for some reason the Cornell Box scene doesn't render correctly most of the time (see the samples in `samples/buggy`) and triangles in my triangle test scene don't render consistently (sometimes no triangles or only one of the two show up). When I load STL files I also get weird missing triangles that change every time I run the same render. The only randomness could be from choosing which axis to split on.
-- When I looked at the two triangle test scene's BVH tree structure during different trials, I noticed that any time the two triangles were children of the same node, they both didn't show up. Only one showes up if one is in a node on its own (occupies both children) and the other is with a sphere. Both show up when they are in their own nodes with a sphere (don't occupy both children).
-- Updated the axis splitting algorithm to find the axis that had the largest range of the centroids of the objects in the list. I no longer get missing triangles (still trying to figure out why they disappeared). However, my modified Cornell box still doesn't render correctly with the BVH.
-- I wrote a simple scene tester in `AccelTester.java` to see if two scenes have the same intersection properties. It randomly generates rays in the bounding box of the scene and tests to see if they have the same intersections in both scenes. By loading up one scene with the non-accelerated `HittableList` and the other with the `BVHNode`, I can see where any errors could arise.
-- Changing the Cornell Box scene to just have the boxes rotated on the y-axis passes the acceleration tester. My modified scene with the box rotated on multiple axes doesn't. Time to fix the `Rotate` class's bounding boxes.
-- Turns out I had some wrong signs in the rotation transform. Doh.
