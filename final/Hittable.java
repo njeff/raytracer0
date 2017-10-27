@@ -12,6 +12,8 @@ public class Hittable{
 	*/
 	public boolean hit(Ray r, double t_min, double t_max, HitRecord rec){return false;}
 	public boolean bounding_box(double t0, double t1, AABB box){return false;}
+	public double pdf_value(Vec3 o, Vec3 v){return 0;}
+	public Vec3 random(Vec3 o){return new Vec3(1,0,0);}
 }
 
 //flips the normal, used for flat rectangles

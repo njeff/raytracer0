@@ -9,7 +9,7 @@ public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
 	public static final int nx = 500; //output resolution
 	public static final int ny = 500;
-	public static final int ns = 100; //samples per pixel
+	public static final int ns = 50; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
@@ -37,11 +37,18 @@ public class Tracer{
 				Utilities.permute(hs);
 				Utilities.permute(vs);
 
+				Hittable light_shape = new XZRect(213,343,227,332,554, null);
+				Hittable glass_shape = new Sphere(new Vec3(190,90,190),90, null);
+				Hittable[] a = new Hittable[2];
+				a[0] = light_shape;
+				a[1] = glass_shape;
+				HittableList hlist = new HittableList(a,2);
+
 				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
 					double u = (i+hs[s])/nx;
 					double v = (jj+vs[s])/ny;
 					Ray r = cam.get_ray(u,v);
-					col = col.add(color(r,world,0));
+					col = col.add(color(r,world,glass_shape,0));
 				}
 				col = col.div(ns);
 				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light sources
@@ -62,31 +69,25 @@ public class Tracer{
 	* @param world the list of objects to hit
 	* @param depth the current recursion depth
 	*/
-	static Vec3 color(Ray r, HittableList world, int depth){
+	static Vec3 color(Ray r, HittableList world, Hittable light_shape, int depth){
 		HitRecord rec = new HitRecord();
 		if(world.hit(r,0.001,Double.MAX_VALUE,rec)){ //intersect with list of objects
-			Ray scattered = new Ray();
-			Vec3 attenuation = new Vec3();
+			ScatterRecord srec = new ScatterRecord();
 			Vec3 emitted = rec.mat.emitted(r, rec, rec.u, rec.v, rec.p);
-			DoubleP pdf = new DoubleP();
-			if(depth < MAX_DEPTH && rec.mat.scatter(r,rec,attenuation,scattered,pdf)){ //if we haven't recursed beyond max depth and there is an impact
-				//hack some lighting pdf
-				Vec3 onlight = new Vec3(213 + Math.random()*(343-213), 554, 227 + Math.random()*(332-227));
-				Vec3 tolight = onlight.sub(rec.p);
-				double distanceSquared = tolight.squared_length();
-				tolight.unit();
-				if(Vec3.dot(tolight,rec.normal) < 0){
-					return emitted;
+			//if we haven't recursed beyond max depth and there is an impact
+			if(depth < MAX_DEPTH && rec.mat.scatter(r, rec, srec)){
+				if(srec.is_specular){
+					return srec.attenuation.mul(color(srec.specular_ray, world, light_shape, depth+1));
+				} else {
+					HittablePDF plight = new HittablePDF(light_shape, rec.p);
+					MixturePDF p = new MixturePDF(plight, srec.pdf);
+
+					Ray scattered = new Ray(rec.p, p.generate(), r.time());
+					double pdfv = p.value(scattered.direction());
+					//rendering equation
+					return emitted.add(
+						srec.attenuation.mul(rec.mat.scatteringPDF(r, rec, scattered)).mul(color(scattered, world, light_shape, depth+1)).div(pdfv));
 				}
-				double lightarea = (343-213)*(332-227);
-				double lightcosine = Math.abs(tolight.y());
-				if(lightcosine < 0.000001){
-					return emitted;
-				}
-				pdf.set(distanceSquared/(lightcosine*lightarea));
-				scattered.set(new Ray(rec.p, tolight, r.time()));
-				
-				return color(scattered, world, depth+1).mul(attenuation).mul(rec.mat.scatteringPDF(r, rec, scattered)).div(pdf.v).add(emitted); //rendering equation
 			} else {
 				return emitted;
 			}

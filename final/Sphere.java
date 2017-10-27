@@ -53,6 +53,25 @@ public class Sphere extends Hittable{
 		return true;
 	}
 
+	public double pdf_value(Vec3 o, Vec3 v){
+		HitRecord rec = new HitRecord();
+		if(hit(new Ray(o, v), 0.001, Double.MAX_VALUE, rec)){
+			double cos_theta_max = Math.sqrt(1 - radius*radius/(center.sub(o).squared_length()));
+			double solid_angle = 2*Math.PI*(1-cos_theta_max);
+			return 1/solid_angle;
+		} else {
+			return 0;
+		}
+	}
+
+	public Vec3 random(Vec3 o){
+		Vec3 direction = center.sub(o);
+		double distance_squared = direction.squared_length();
+		ONB uvw = new ONB();
+		uvw.buildFromW(direction);
+		return uvw.local(Utilities.random_to_sphere(radius, distance_squared));
+	}
+
 	/**
 	* Gets UV coordinates of a point p on the sphere
 	* @param p point on sphere

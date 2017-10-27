@@ -47,4 +47,18 @@ public class HittableList extends Hittable{
 		}
 		return true;
 	}
+
+	public double pdf_value(Vec3 o, Vec3 v){
+		double weight = 1/list_size;
+		double sum = 0;
+		for(int i = 0; i<list_size; i++){
+			sum += weight*list[i].pdf_value(o,v);
+		}
+		return sum;
+	}
+
+	public Vec3 random(Vec3 o){
+		int index = (int)(Math.random()*list_size);
+		return list[index].random(o);
+	}
 }

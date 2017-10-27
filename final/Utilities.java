@@ -34,6 +34,16 @@ public class Utilities{
 		return new Vec3(x, y, z);
 	}
 
+	static Vec3 random_to_sphere(double radius, double distance_squared){
+		double r1 = Math.random();
+		double r2 = Math.random();
+		double z = 1 + r2*(Math.sqrt(1-radius*radius/distance_squared)-1);
+		double phi = 2*Math.PI*r1; //random phi around sphere
+		double x = Math.cos(phi)*Math.sqrt(1-z*z);
+		double y = Math.sin(phi)*Math.sqrt(1-z*z);
+		return new Vec3(x, y, z);
+	}
+
 	/**
 	* @param v direction of the incidence vector
 	* @param n normal of the surface

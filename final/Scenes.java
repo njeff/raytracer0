@@ -70,6 +70,7 @@ public class Scenes{
 		Material white = new Lambertian(new ConstantTexture(new Vec3(0.73, 0.73, 0.73)));
 		Material green = new Lambertian(new ConstantTexture(new Vec3(0.12, 0.45, 0.15)));
 		Material light = new DiffuseLight(new ConstantTexture(new Vec3(15, 15, 15)));
+		Material aluminum = new Metal(new Vec3(0.8, 0.85, 0.88), 0);
 		//walls and light
 		list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 		list[i++] = new YZRect(0, 555, 0, 555, 0, red);
@@ -78,10 +79,11 @@ public class Scenes{
 		list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 		list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 		//boxes
-		Hittable b1 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -20, Rotate.Y), new Vec3(130, 0, 65));
+		//Hittable b1 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -20, Rotate.Y), new Vec3(130, 0, 65));
 		Hittable b2 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265, 0, 295));
-		list[i++] = b1;
+		//list[i++] = b1;
 		list[i++] = b2;
+		list[i++] = new Sphere(new Vec3(190,90,190), 90, new Dielectric(new Vec3(1,1,1),1.5));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));

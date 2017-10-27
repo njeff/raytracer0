@@ -91,6 +91,23 @@ class XZRect extends Hittable{
 		box.set(new AABB(new Vec3(x0, k-0.0001, z0), new Vec3(x1, k+0.0001, z1))); //very thin
 		return true;
 	}
+
+	public double pdf_value(Vec3 o, Vec3 v){
+		HitRecord rec = new HitRecord();
+		if(hit(new Ray(o,v), 0.001, Double.MAX_VALUE, rec)){
+			double area = (x1-x0)*(z1-z0);
+			double distance_squared = rec.t*rec.t*v.squared_length();
+			double cosine = Math.abs(Vec3.dot(v, rec.normal))/v.length();
+			return distance_squared/(cosine*area);
+		} else{
+			return 0;
+		}
+	}
+
+	public Vec3 random(Vec3 o){
+		Vec3 random_point = new Vec3(x0 + Math.random()*(x1-x0), k, z0 + Math.random()*(z1-z0));
+		return random_point.sub(o);
+	}
 }
 
 //YZ rectangle
