@@ -23,6 +23,16 @@ class CosinePDF extends PDF{
 	}
 }
 
+class IsotropicPDF extends PDF{
+	public double value(Vec3 direction){
+		return 0.25*Math.PI;
+	}
+
+	public Vec3 generate(){
+		return Utilities.random_on_unit_sphere();
+	}
+}
+
 class HittablePDF extends PDF{
 	Vec3 o;
 	Hittable ptr;

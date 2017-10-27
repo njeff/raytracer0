@@ -131,7 +131,7 @@ class DiffuseLight extends Material{
 	public DiffuseLight(Texture a){
 		emit = a;
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attenuation, Ray scattered, DoubleP pdf){
+	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
 		return false;
 	}
 	public Vec3 emitted(Ray r_in, HitRecord rec, double u, double v, Vec3 p){
@@ -150,10 +150,12 @@ class Isotropic extends Material{
 	public Isotropic(Texture a){
 		albedo = a;
 	}
-	public boolean scatter(Ray r_in, HitRecord rec, Vec3 attenuation, Ray scattered, DoubleP pdf){
+	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
 		//isotropic scatters in all directions
-		scattered.set(new Ray(rec.p, Utilities.random_in_unit_sphere()));
-		attenuation.set(albedo.value(rec.u, rec.v, rec.p));
+		srec.pdf = new IsotropicPDF();
+		srec.is_specular = false;
+		srec.specular_ray = new Ray(rec.p, Utilities.random_in_unit_sphere());
+		srec.attenuation = albedo.value(rec.u, rec.v, rec.p);
 		return true;
 	}
 }

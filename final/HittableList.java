@@ -49,7 +49,7 @@ public class HittableList extends Hittable{
 	}
 
 	public double pdf_value(Vec3 o, Vec3 v){
-		double weight = 1/list_size;
+		double weight = 1.0/list_size;
 		double sum = 0;
 		for(int i = 0; i<list_size; i++){
 			sum += weight*list[i].pdf_value(o,v);

@@ -9,7 +9,7 @@ public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
 	public static final int nx = 500; //output resolution
 	public static final int ny = 500;
-	public static final int ns = 50; //samples per pixel
+	public static final int ns = 100; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
@@ -18,6 +18,14 @@ public class Tracer{
 
 		HittableList world = Scenes.cornell_box(true);
 		Camera cam = Scenes.cornellCam(nx,ny);
+
+		//set up objects to bias pdf
+		Hittable light_shape = new XZRect(213,343,227,332,554, null);
+		Hittable glass_shape = new Sphere(new Vec3(190,90,190),90, null);
+		Hittable[] a = new Hittable[2];
+		a[0] = light_shape;
+		a[1] = glass_shape;
+		HittableList hlist = new HittableList(a,2);
 
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -37,18 +45,11 @@ public class Tracer{
 				Utilities.permute(hs);
 				Utilities.permute(vs);
 
-				Hittable light_shape = new XZRect(213,343,227,332,554, null);
-				Hittable glass_shape = new Sphere(new Vec3(190,90,190),90, null);
-				Hittable[] a = new Hittable[2];
-				a[0] = light_shape;
-				a[1] = glass_shape;
-				HittableList hlist = new HittableList(a,2);
-
 				for(int s = 0; s<ns; s++){ //multisampling and free anti-aliasing
 					double u = (i+hs[s])/nx;
 					double v = (jj+vs[s])/ny;
 					Ray r = cam.get_ray(u,v);
-					col = col.add(color(r,world,glass_shape,0));
+					col = col.add(color(r,world,light_shape,0));
 				}
 				col = col.div(ns);
 				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light sources
