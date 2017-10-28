@@ -104,6 +104,7 @@ class XZRect extends Hittable{
 		}
 	}
 
+	//random vector from o to this object
 	public Vec3 random(Vec3 o){
 		Vec3 random_point = new Vec3(x0 + Math.random()*(x1-x0), k, z0 + Math.random()*(z1-z0));
 		return random_point.sub(o);

@@ -71,6 +71,7 @@ public class Scenes{
 		Material green = new Lambertian(new ConstantTexture(new Vec3(0.12, 0.45, 0.15)));
 		Material light = new DiffuseLight(new ConstantTexture(new Vec3(15, 15, 15)));
 		Material aluminum = new Metal(new Vec3(0.8, 0.85, 0.88), 0);
+		Material plastic = new Plastic(new Vec3(0.65,0.05,0.05), 0, 0.9);
 		//walls and light
 		list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 		list[i++] = new YZRect(0, 555, 0, 555, 0, red);
@@ -82,12 +83,13 @@ public class Scenes{
 		Hittable b1 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -20, Rotate.Y), new Vec3(130, 0, 65));
 		Hittable b2 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265, 0, 295));
 		//list[i++] = b1;
-		//list[i++] = b2;
+		list[i++] = b2;
 		//list[i++] = new Sphere(new Vec3(190,90,190), 90, new Dielectric(new Vec3(1,1,1),1.5));
+		list[i++] = new Sphere(new Vec3(190,90,190), 90, plastic);
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
-		list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
-		list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
+		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
+		//list[i++] = new ConstantMedium(b2, 0.01, new ConstantTexture(new Vec3(0,0,0)));
 		
 		if(accel){
 			return new BVHNode(list, 0, i, 0, 1);
@@ -138,7 +140,7 @@ public class Scenes{
 	}
 
 	//renders a teapot
-	static HittableList pot(){
+	static HittableList pot(boolean accel){
 		Hittable[] list = new Hittable[10];
 		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
 		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
@@ -157,6 +159,29 @@ public class Scenes{
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
+	}
+
+	//very detailed pot
+	static HittableList pot2(boolean accel){
+		Hittable[] list = new Hittable[10];
+		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
+		StlLoad body = new StlLoad("../objects/Utah_teapot/05-utah-teapot.stl", porcelain, true);
+		StlLoad lid = new StlLoad("../objects/Utah_teapot/05-utah-teapot-lid.stl", porcelain);
+		int i = 0;
+		list[i++] = body.objectBVH();
+		list[i++] = new Translate(new Scale(lid.objectBVH(), 1.07), new Vec3(5, -10, 100));
+		list[i++] = new XYRect(-1000, 1000, -1000, 1000, 0, new Metal(new Vec3(0.8,0.8,0.8), 0.05));
+		list[i++] = new XYRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		return new HittableList(list,i);
+	}
+
+	static Camera potCam2(int nx, int ny){
+		Vec3 lookfrom = new Vec3(100,300,150);
+		Vec3 lookat = new Vec3(30,0,70);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		return cam;
 	}
 

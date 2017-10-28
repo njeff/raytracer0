@@ -12,14 +12,19 @@ import java.io.ByteArrayInputStream;
 public class StlLoad{
 	ArrayList<Hittable> list = new ArrayList<Hittable>();
 
+	public StlLoad(String path, Material material){
+		this(path,material,false);
+	}
+
 	/**
 	* @param path the path to the stl file
 	* @param material the material of the final object
+	* @param invert whether to invert vertex read order
 	*/
-	public StlLoad(String path, Material material){
+	public StlLoad(String path, Material material, boolean invert){
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(path));
-
+			boolean nerror = false;
 			if(!br.readLine().toLowerCase().trim().startsWith("solid")){ //is binary
 				Path fileLocation = Paths.get(path);
 				byte[] data = Files.readAllBytes(fileLocation);
@@ -47,7 +52,18 @@ public class StlLoad{
 						vertices[j] = new Vec3(components[0],components[1],components[2]);
 					}
 					din.skipBytes(2); //skip attributes
-					list.add(new Triangle(vertices[0],vertices[1],vertices[2],material));
+					Triangle t;
+					if(invert){
+						t = new Triangle(vertices[2],vertices[1],vertices[0],material);
+					} else {
+						t = new Triangle(vertices[0],vertices[1],vertices[2],material);
+					}
+					if(Vec3.dot(t.normal,normal) < 0 && !nerror){ //normals don't match?
+						System.out.println("File normal doesn't match right hand rule normal:\n" 
+							+ t.normal.toString() + " vs " + normal.toString());
+						nerror = true; //print error once to prevent clogging output
+					}
+					list.add(t);
 				}
 				
 			} else { //is ASCII
@@ -64,7 +80,11 @@ public class StlLoad{
 						triangle = 2;
 					}
 					if(e[0].equals("endloop")){
-						list.add(new Triangle(vertices[2],vertices[1],vertices[0],material));
+						if(invert){
+							list.add(new Triangle(vertices[0],vertices[1],vertices[2],material));
+						} else {
+							list.add(new Triangle(vertices[2],vertices[1],vertices[0],material));
+						}
 					}
 				}
 			}

@@ -9,17 +9,19 @@ public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
 	public static final int nx = 500; //output resolution
 	public static final int ny = 500;
-	public static final int ns = 100; //samples per pixel
+	public static final int ns = 20; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.cornell_box(true);
-		Camera cam = Scenes.cornellCam(nx,ny);
+		HittableList world = Scenes.pot2(true);
+		Camera cam = Scenes.potCam2(nx,ny);
 
 		//set up objects to bias pdf
+		Hittable plight = new XYRect(140, 160, 0, 50, 300, null);
+		//Hittable plight = new XZRect(140, 160, 0, 50, 300, null);
 		Hittable light_shape = new XZRect(213,343,227,332,554, null);
 		Hittable glass_shape = new Sphere(new Vec3(190,90,190),90, null);
 		Hittable[] a = new Hittable[2];
@@ -49,7 +51,7 @@ public class Tracer{
 					double u = (i+hs[s])/nx;
 					double v = (jj+vs[s])/ny;
 					Ray r = cam.get_ray(u,v);
-					col = col.add(color(r,world,light_shape,0));
+					col = col.add(color(r,world,plight,0));
 				}
 				col = col.div(ns);
 				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light sources
@@ -94,11 +96,11 @@ public class Tracer{
 			}
 		} else {
 			//background acts a large light source
-			//Vec3 unit_dir = Vec3.unit_vector(r.direction());
-			//double t = 0.5*(unit_dir.y() + 1.0);
-			//return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
+			Vec3 unit_dir = Vec3.unit_vector(r.direction());
+			double t = 0.5*(unit_dir.y() + 1.0);
+			return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
 			//or all black
-			return new Vec3(0,0,0);
+			//return new Vec3(0,0,0);
 		}
 	}
 }

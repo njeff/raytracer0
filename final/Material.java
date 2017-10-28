@@ -79,6 +79,45 @@ class Metal extends Material{
 	}
 }
 
+//shiny diffuse
+class Plastic extends Material{
+	Vec3 albedo;
+	double fuzz, roughness;
+
+	public Plastic(Vec3 a, double f, double r){
+		albedo = a;
+		if(f<1){
+			fuzz = f;
+		} else {
+			fuzz = 1;
+		}
+		if(r<1){
+			roughness = r;
+		} else {
+			roughness = 1;
+		}
+	}
+
+	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
+		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
+		if(cosine < 0) cosine = 0; //if not in hemisphere
+		return cosine/Math.PI;
+	}
+
+	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
+		Vec3 reflected = Utilities.reflect(Vec3.unit_vector(r_in.direction()),rec.normal);
+		srec.specular_ray = new Ray(rec.p, reflected.add(Utilities.random_in_unit_sphere().mul(fuzz)));
+		srec.attenuation = albedo;
+		if(Math.random() < roughness){
+			srec.is_specular = false;
+		} else {
+			srec.is_specular = true;
+		}
+		srec.pdf = new CosinePDF(rec.normal);
+		return true;
+	}
+}
+
 //transparent material
 class Dielectric extends Material{
 	Vec3 transparency;
@@ -149,6 +188,9 @@ class Isotropic extends Material{
 	Texture albedo;
 	public Isotropic(Texture a){
 		albedo = a;
+	}
+	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
+		return 0.25/Math.PI;
 	}
 	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
 		//isotropic scatters in all directions
