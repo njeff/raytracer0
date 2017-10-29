@@ -54,4 +54,11 @@ public class MovingSphere extends Hittable{
 	Vec3 center(double time){
 		return center0.add(center1.sub(center0).mul((time-time0)/(time1-time0)));
 	}
+
+	public boolean bounding_box(double t0, double t1, AABB box){
+		AABB box0 = new AABB(center0.sub(new Vec3(radius, radius, radius)),center0.add(new Vec3(radius, radius, radius)));
+		AABB box1 = new AABB(center1.sub(new Vec3(radius, radius, radius)),center1.add(new Vec3(radius, radius, radius)));
+		box.set(Utilities.surrounding_box(box0,box1));
+		return true;
+	}
 }

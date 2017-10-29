@@ -4,7 +4,7 @@
 */
 public class Scenes{
 	//generates a random scene of spheres, like the cover of the book
-	static HittableList random_scene(){
+	static HittableList random_scene(boolean accel){
 		int n = 500;
 		Hittable[] list = new Hittable[n+1];
 		Texture checker = new CheckerTexture(new ConstantTexture(new Vec3(0.2,0.3,0.1)), new ConstantTexture(new Vec3(0.9,0.9,0.9)));
@@ -33,11 +33,32 @@ public class Scenes{
 
 		//three center spheres
 		list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
-		//list[i++] = new Sphere(new Vec3(0,1,0),1.0, new TextureSphere("../textures/PathfinderMap.jpg"));
 		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ConstantTexture(new Vec3(0.4,0.2,0.1))));
-		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
-		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
+		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
+		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.65,0.05,0.05)),1));
+		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
+		list[i++] = new Sphere(new Vec3(0,5,0),1, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		list[i++] = new Sphere(new Vec3(10,6,0),1, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		if(accel){
+			return new BVHNode(list,0,i,0,1);
+		} else {
+			return new HittableList(list,i);
+		}
+	}
 
+	static Camera rsCam(int nx, int ny){
+		Vec3 lookfrom = new Vec3(10,2,-4);
+		Vec3 lookat = new Vec3(0,1,0);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 14;
+		return new Camera(lookfrom, lookat, new Vec3(0,1,0), 40, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+	}
+
+	static HittableList rsLights(){
+		Hittable[] list = new Hittable[2];
+		int i = 0;
+		list[i++] = new Sphere(new Vec3(0,5,0),1, null);
+		list[i++] =  new Sphere(new Vec3(10,6,0),1, null);
 		return new HittableList(list,i);
 	}
 
@@ -69,23 +90,21 @@ public class Scenes{
 		Material red = new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)));
 		Material white = new Lambertian(new ConstantTexture(new Vec3(0.73, 0.73, 0.73)));
 		Material green = new Lambertian(new ConstantTexture(new Vec3(0.12, 0.45, 0.15)));
-		Material light = new DiffuseLight(new ConstantTexture(new Vec3(15, 15, 15)));
+		Material light = new DiffuseLight(new ConstantTexture(new Vec3(10, 10, 10)));
 		Material aluminum = new Metal(new Vec3(0.8, 0.85, 0.88), 0);
-		Material plastic = new Plastic(new Vec3(0.65,0.05,0.05), 0, 0.9);
 		//walls and light
 		list[i++] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 		list[i++] = new YZRect(0, 555, 0, 555, 0, red);
-		list[i++] = new FlipNormals(new XZRect(213, 343, 227, 332, 554, light));
+		list[i++] = new FlipNormals(new XZRect(113, 443, 127, 432, 554, light));
 		list[i++] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
 		list[i++] = new XZRect(0, 555, 0, 555, 0, white);
 		list[i++] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
 		//boxes
 		Hittable b1 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -20, Rotate.Y), new Vec3(130, 0, 65));
-		Hittable b2 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265, 0, 295));
+		Hittable b2 = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), new Dielectric(new Vec3(1,1,1),1.5)), 15, Rotate.Y), new Vec3(265, 0, 295));
 		//list[i++] = b1;
 		list[i++] = b2;
 		//list[i++] = new Sphere(new Vec3(190,90,190), 90, new Dielectric(new Vec3(1,1,1),1.5));
-		list[i++] = new Sphere(new Vec3(190,90,190), 90, plastic);
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
@@ -249,6 +268,27 @@ public class Scenes{
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		return cam;
+	}
+
+	//lighting test scene
+	static HittableList simple_light2(boolean accel){
+		Hittable[] list = new Hittable[5];
+		Material glossy = new Glossy(new ConstantTexture(new Vec3(0.65, 0.05, 0.05)), 1);
+		list[0] = new Sphere(new Vec3(0,-1000,0),1000, new Lambertian(new ConstantTexture(new Vec3(0.9, 0.9, 0.9))));
+		list[1] = new Sphere(new Vec3(2,2,0),1.5, new Lambertian(new ConstantTexture(new Vec3(0.65, 0.05, 0.05))));
+		list[2] = new Sphere(new Vec3(6,2,0),1.5, glossy);
+		list[3] = new Sphere(new Vec3(4,5,5),2, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		list[4] = new XYRect(3,5,1,3,-2, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		return new HittableList(list,5);
+	}
+
+	static Camera sl2Cam(int nx, int ny){
+		Vec3 lookfrom = new Vec3(4,2,5);
+		Vec3 lookat = new Vec3(4,2,-2);
+		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
+		double aperture = 128;
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 90, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		return cam;
 	}
 }

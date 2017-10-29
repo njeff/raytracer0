@@ -1,3 +1,6 @@
+/**
+* Probability distribution functions
+*/
 public abstract class PDF{
 	public abstract double value(Vec3 direction);
 	public abstract Vec3 generate();
@@ -20,6 +23,32 @@ class CosinePDF extends PDF{
 
 	public Vec3 generate(){
 		return uvw.local(Utilities.random_cosine_direction());
+	}
+}
+
+class DirCosPDF extends PDF{
+	ONB uvw = new ONB();
+	Vec3 nm;
+	public DirCosPDF(Vec3 n, Vec3 dir){
+		nm = n;
+		uvw.buildFromW(dir);
+	}
+
+	public double value(Vec3 direction){
+		double cosine = Vec3.dot(Vec3.unit_vector(direction), uvw.w());
+		if(cosine > 0){ //if in hemisphere
+			return cosine/Math.PI;
+		} else{
+			return 0;
+		}
+	}
+
+	public Vec3 generate(){
+		Vec3 v;
+		do{
+			v = uvw.local(Utilities.random_cosine_direction());
+		} while (Vec3.dot(v,nm) < 0);
+		return v;
 	}
 }
 

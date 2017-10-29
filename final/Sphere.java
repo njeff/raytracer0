@@ -58,13 +58,14 @@ public class Sphere extends Hittable{
 		if(hit(new Ray(o, v), 0.001, Double.MAX_VALUE, rec)){
 			double cos_theta_max = Math.sqrt(1 - radius*radius/(center.sub(o).squared_length()));
 			double solid_angle = 2*Math.PI*(1-cos_theta_max);
-			return 1/solid_angle;
+			return 1/solid_angle; //portion of unit sphere's surface area that is covered by projecting object onto it
 		} else {
 			return 0;
 		}
 	}
 
 	public Vec3 random(Vec3 o){
+		//random vector from o to the sphere
 		Vec3 direction = center.sub(o);
 		double distance_squared = direction.squared_length();
 		ONB uvw = new ONB();

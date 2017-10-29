@@ -49,6 +49,24 @@ public class XYRect extends Hittable{
 		box.set(new AABB(new Vec3(x0, y0, k-0.0001), new Vec3(x1, y1, k+0.0001))); //very thin
 		return true;
 	}
+
+	public double pdf_value(Vec3 o, Vec3 v){
+		HitRecord rec = new HitRecord();
+		if(hit(new Ray(o,v), 0.001, Double.MAX_VALUE, rec)){
+			double area = (x1-x0)*(y1-y0);
+			double distance_squared = rec.t*rec.t*v.squared_length();
+			double cosine = Math.abs(Vec3.dot(v, rec.normal))/v.length();
+			return distance_squared/(cosine*area);
+		} else{
+			return 0;
+		}
+	}
+
+	//random vector from o to this object
+	public Vec3 random(Vec3 o){
+		Vec3 random_point = new Vec3(x0 + Math.random()*(x1-x0), y0 + Math.random()*(y1-y0), k);
+		return random_point.sub(o);
+	}
 }
 
 //XZ Rectangle
