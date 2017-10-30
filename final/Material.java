@@ -90,7 +90,7 @@ class Glossy extends Material{
 
 		if(Math.random() < mix*sc){
 			//reflect
-			srec.specular_ray = new Ray(rec.p, reflected);
+			srec.specular_ray = new Ray(rec.p, Vec3.unit_vector(reflected.add(Utilities.random_in_unit_sphere().mul(1-sc))));
 			srec.attenuation = new Vec3(1,1,1); //dielectrics dont have colored reflections
 			srec.is_specular = true;
 		} else {
@@ -102,6 +102,7 @@ class Glossy extends Material{
 }
 
 //reflective material
+//fuzz makes this like a glossy material
 class Metal extends Material{
 	Vec3 albedo; //color
 	double fuzz; //amount of random scattering

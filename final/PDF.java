@@ -26,32 +26,6 @@ class CosinePDF extends PDF{
 	}
 }
 
-class DirCosPDF extends PDF{
-	ONB uvw = new ONB();
-	Vec3 nm;
-	public DirCosPDF(Vec3 n, Vec3 dir){
-		nm = n;
-		uvw.buildFromW(dir);
-	}
-
-	public double value(Vec3 direction){
-		double cosine = Vec3.dot(Vec3.unit_vector(direction), uvw.w());
-		if(cosine > 0){ //if in hemisphere
-			return cosine/Math.PI;
-		} else{
-			return 0;
-		}
-	}
-
-	public Vec3 generate(){
-		Vec3 v;
-		do{
-			v = uvw.local(Utilities.random_cosine_direction());
-		} while (Vec3.dot(v,nm) < 0);
-		return v;
-	}
-}
-
 class IsotropicPDF extends PDF{
 	public double value(Vec3 direction){
 		return 0.25/Math.PI;

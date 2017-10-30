@@ -161,13 +161,14 @@ public class Scenes{
 	//renders a teapot
 	static HittableList pot(boolean accel){
 		Hittable[] list = new Hittable[10];
-		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
+		Material porcelain = new Glossy(new ConstantTexture(new Vec3(1,1,1)), 1);
+		//Material porcelain = new Metal(new Vec3(1,1,1), 1);
 		//Texture floor = new ConstantTexture(new Vec3(0.9,0.9,0.9));
 		StlLoad stl = new StlLoad("../objects/teapot.stl", porcelain);
 		int i = 0;
 		list[i++] = stl.objectBVH();
 		list[i++] = new XZRect(-1000, 1000, -1000, 1000, 10, new Metal(new Vec3(0.8,0.8,0.8), 0.05));
-		list[i++] = new XZRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		list[i++] = new FlipNormals(new XZRect(70, 110, 0, 90, 120, new DiffuseLight(new ConstantTexture(new Vec3(5,5,5)))));
 		return new HittableList(list,i);
 	}
 
@@ -181,17 +182,24 @@ public class Scenes{
 		return cam;
 	}
 
+	static HittableList potLights(){
+		Hittable[] list = new Hittable[1];
+		int i = 0;
+		list[i++] = new XZRect(70, 110, 0, 90, 120,  null);
+		return new HittableList(list,i);
+	}
+
 	//very detailed pot
 	static HittableList pot2(boolean accel){
 		Hittable[] list = new Hittable[10];
-		Material porcelain = new Metal(new Vec3(1,1,1), 0.05);
+		Material porcelain = new Glossy(new ConstantTexture(new Vec3(1,1,1)), 1);
 		StlLoad body = new StlLoad("../objects/Utah_teapot/05-utah-teapot.stl", porcelain, true);
 		StlLoad lid = new StlLoad("../objects/Utah_teapot/05-utah-teapot-lid.stl", porcelain);
 		int i = 0;
 		list[i++] = body.objectBVH();
 		list[i++] = new Translate(new Scale(lid.objectBVH(), 1.07), new Vec3(5, -10, 100));
 		list[i++] = new XYRect(-1000, 1000, -1000, 1000, 0, new Metal(new Vec3(0.8,0.8,0.8), 0.05));
-		list[i++] = new XYRect(140, 160, 0, 50, 300, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
+		list[i++] = new FlipNormals(new XYRect(-70, 130, -60, 60, 200, new DiffuseLight(new ConstantTexture(new Vec3(5,5,5)))));
 		return new HittableList(list,i);
 	}
 
@@ -202,6 +210,13 @@ public class Scenes{
 		double aperture = 128;
 		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 50, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		return cam;
+	}
+
+	static HittableList pot2Lights(){
+		Hittable[] list = new Hittable[1];
+		int i = 0;
+		list[i++] = new XZRect(-70, 130, -60, 60, 200, null);
+		return new HittableList(list,i);
 	}
 
 	//renders a magnolia (one of the surface normals is off I think)

@@ -7,19 +7,19 @@ import java.util.stream.*;
 */
 public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
-	public static final int nx = 500; //output resolution
-	public static final int ny = 500;
-	public static final int ns = 200; //samples per pixel
+	public static final int nx = 600; //output resolution
+	public static final int ny = 400;
+	public static final int ns = 10; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.random_scene(true);
-		Camera cam = Scenes.rsCam(nx,ny);
+		HittableList world = Scenes.pot2(true);
+		Camera cam = Scenes.potCam2(nx,ny);
 		//set up objects to bias pdf
-		HittableList hlist = Scenes.rsLights();
+		HittableList hlist = Scenes.pot2Lights();
 
 		//set up objects to bias pdf
 		//Hittable plight = new XYRect(140, 160, 0, 50, 300, null);
@@ -83,9 +83,12 @@ public class Tracer{
 			ScatterRecord srec = new ScatterRecord();
 			Vec3 emitted = rec.mat.emitted(r, rec, rec.u, rec.v, rec.p);
 			//if we haven't recursed beyond max depth and there is an impact
+			//generate new output ray
 			if(depth < MAX_DEPTH && rec.mat.scatter(r, rec, srec)){
 				if(srec.is_specular){
-					return srec.attenuation.mul(color(srec.specular_ray, world, light_shape, depth+1));
+					//handle special case where the scattered ray has only one direction
+					//dirac delta
+					return srec.attenuation.mul(color(srec.specular_ray, world, light_shape, depth+1)); //probability of direction is 1
 				} else {
 					//get distribution do that area from this point
 					HittablePDF plight = new HittablePDF(light_shape, rec.p);
@@ -100,7 +103,7 @@ public class Tracer{
 						srec.attenuation.mul(rec.mat.scatteringPDF(r, rec, scattered)) //multiply color by probability of that direction based on material
 						.mul(color(scattered, world, light_shape, depth+1)) //recurse
 						.div(pdfv)); //divide by probability of direction as dictated by sampling strategy
-					//lambertian diffuse have a constant BRDF if doing cos sampling
+					//lambertian diffuse have a constant BRDF
 					//because scatteringPDF matches the cosinepdf
 				}
 			} else {
