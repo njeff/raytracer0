@@ -32,11 +32,13 @@ public class Scenes{
 		}
 
 		//three center spheres
-		list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
+		//list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
+		list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.05,0.05,0.75)),1));
 		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ConstantTexture(new Vec3(0.4,0.2,0.1))));
 		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
-		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.65,0.05,0.05)),1));
-		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
+		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.75,0.05,0.05)),1));
+		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Metal(new Vec3(0.7,0.6,0.5), 0.1));
+		list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.05,0.75,0.05)),1));
 		list[i++] = new Sphere(new Vec3(0,5,0),1, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
 		list[i++] = new Sphere(new Vec3(10,6,0),1, new DiffuseLight(new ConstantTexture(new Vec3(4,4,4))));
 		if(accel){
@@ -105,6 +107,7 @@ public class Scenes{
 		//list[i++] = b1;
 		list[i++] = b2;
 		//list[i++] = new Sphere(new Vec3(190,90,190), 90, new Dielectric(new Vec3(1,1,1),1.5));
+		list[i++] = new Sphere(new Vec3(190,90,190), 90, new Glossy(new ConstantTexture(new Vec3(0.75,0.05,0.05)),1));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
@@ -123,6 +126,13 @@ public class Scenes{
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 14;
 		return new Camera(lookfrom, lookat, new Vec3(0,1,0), 40, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+	}
+
+	static HittableList cornellLights(){
+		Hittable[] list = new Hittable[2];
+		int i = 0;
+		list[i++] = new XZRect(113, 443, 127, 432, 554, null);
+		return new HittableList(list,i);
 	}
 
 	//triangle debugging scene

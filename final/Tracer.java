@@ -7,19 +7,19 @@ import java.util.stream.*;
 */
 public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
-	public static final int nx = 600; //output resolution
-	public static final int ny = 400;
-	public static final int ns = 10; //samples per pixel
+	public static final int nx = 500; //output resolution
+	public static final int ny = 500;
+	public static final int ns = 50; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.pot2(true);
-		Camera cam = Scenes.potCam2(nx,ny);
+		HittableList world = Scenes.cornell_box(true);
+		Camera cam = Scenes.cornellCam(nx,ny);
 		//set up objects to bias pdf
-		HittableList hlist = Scenes.pot2Lights();
+		HittableList hlist = Scenes.cornellLights();
 
 		//set up objects to bias pdf
 		//Hittable plight = new XYRect(140, 160, 0, 50, 300, null);
