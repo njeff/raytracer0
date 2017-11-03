@@ -10,6 +10,9 @@ public class Vec3{
 		e[1] = e1;
 		e[2] = e2;
 	}
+	public Vec3(double e){
+		this(e,e,e);
+	}
 	//coordinate
 	public double x() {return e[0];}
 	public double y() {return e[1];}

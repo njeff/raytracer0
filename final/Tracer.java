@@ -9,17 +9,17 @@ public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
 	public static final int nx = 500; //output resolution
 	public static final int ny = 500;
-	public static final int ns = 50; //samples per pixel
+	public static final int ns = 100; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.cornell_box(true);
-		Camera cam = Scenes.cornellCam(nx,ny);
+		HittableList world = Scenes.sphereGrid(true);
+		Camera cam = Scenes.sphereGridCam(nx,ny);
 		//set up objects to bias pdf
-		HittableList hlist = Scenes.cornellLights();
+		HittableList hlist = Scenes.sphereGridLights();
 
 		//set up objects to bias pdf
 		//Hittable plight = new XYRect(140, 160, 0, 50, 300, null);
@@ -85,7 +85,7 @@ public class Tracer{
 			//if we haven't recursed beyond max depth and there is an impact
 			//generate new output ray
 			if(depth < MAX_DEPTH && rec.mat.scatter(r, rec, srec)){
-				if(srec.is_specular){
+				if(srec.is_specular == 1){
 					//handle special case where the scattered ray has only one direction
 					//dirac delta
 					return srec.attenuation.mul(color(srec.specular_ray, world, light_shape, depth+1)); //probability of direction is 1
@@ -95,25 +95,39 @@ public class Tracer{
 					//mix distribution to a light source with the object's natual scattering pdf
 					//bias rays toward light source to reduce variance (importance sampling)
 					MixturePDF p = new MixturePDF(plight, srec.pdf);
+					//PDF p = srec.pdf;
 					//mix will sometimes generate rays toward
 					Ray scattered = new Ray(rec.p, p.generate(), r.time()); //generate a ray
+										
+					double scatter_prob = 0;
+					if(srec.is_specular == 0){ //normal way
+						scatter_prob = rec.mat.scatteringPDF(r, rec, scattered);
+					} else if (srec.is_specular == 2){ //sample cook torrance
+						scatter_prob = rec.mat.scatteringPDFS(r, rec, scattered);
+						scattered = srec.specular_ray;
+						scattered._time = r.time();
+					}
+
 					double pdfv = p.value(scattered.direction()); //get the probability of a ray going that way based on pdf
+					
 					//rendering equation
 					return emitted.add( //add emitted light
-						srec.attenuation.mul(rec.mat.scatteringPDF(r, rec, scattered)) //multiply color by probability of that direction based on material
+						srec.attenuation.mul(scatter_prob) //multiply color by probability of that direction based on material
 						.mul(color(scattered, world, light_shape, depth+1)) //recurse
 						.div(pdfv)); //divide by probability of direction as dictated by sampling strategy
-					//lambertian diffuse have a constant BRDF
-					//because scatteringPDF matches the cosinepdf
+					//lambertian diffuse have a constant BRDF because they scatter in all directions equally (A/PI)
+					//pi is from the integral of cos(theta) over the hemisphere (cosine due to light from steeper angles contribute less)
+
+					//monte carlo: lambert: sum(0 + (A)*(cos(theta)/PI)*(incident light)/(pdf))/N
 				}
 			} else {
 				return emitted;
 			}
 		} else {
 			//background acts a large light source
-			//Vec3 unit_dir = Vec3.unit_vector(r.direction());
-			//double t = 0.5*(unit_dir.y() + 1.0);
-			//return new Vec3(1.0,1.0,1.0).mul(1.0-t).add(new Vec3(0.5,0.7,1.0).mul(t)); //create a gradient
+			Vec3 unit_dir = Vec3.unit_vector(r.direction());
+			double t = 0.5*(unit_dir.y() + 1.0);
+			//return Utilities.lerp(new Vec3(1.0), new Vec3(0.5,0.7,1.0), t); //create a gradient
 			//or all black
 			return new Vec3(0,0,0);
 		}

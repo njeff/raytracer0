@@ -18,7 +18,10 @@ public class Material{
 	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
 		return 0;
 	}
-	
+
+	public double scatteringPDFS(Ray r_in, HitRecord rec, Ray scattered){
+		return 0;
+	}
 	/**
 	* Used for light sources
 	*/
@@ -29,7 +32,8 @@ public class Material{
 
 class ScatterRecord{
 	Ray specular_ray = new Ray();
-	boolean is_specular = false;
+	//0 = diffuse, 1 = pure specular, 2 = specular component
+	int is_specular = 0;
 	Vec3 attenuation = new Vec3();
 	PDF pdf;
 }
@@ -41,25 +45,25 @@ class Lambertian extends Material{
 		albedo = a;
 	}
 
-	//we use cosine PDF for lower variance
-	//(we want to sample more stuff that is in the direction of the normal)
 	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
 		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
 		if(cosine < 0) cosine = 0; //if not in hemisphere
 		return cosine/Math.PI; //probability of direction follows cosine law
 	}
 
+	//we use cosine PDF for lower variance
+	//(we want to sample more stuff that is in the direction of the normal)
 	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
-		srec.is_specular = false; //not specular
+		srec.is_specular = 0; //not specular
 		srec.attenuation = albedo.value(rec.u, rec.v, rec.p); //get albedo
 		srec.pdf = new CosinePDF(rec.normal); //cosine distribution function
 		return true;
 	}
 }
 
-//i have no idea what im doing l ol
-//things im reading: https://agraphicsguy.wordpress.com/2015/11/01/sampling-microfacet-brdf/
-//figure out how to model microfacets
+//This is physically incorrect but just an experiment
+//Things im reading: https://agraphicsguy.wordpress.com/2015/11/01/sampling-microfacet-brdf/
+//Figure out how to model microfacets
 class Glossy extends Material{
 	Texture albedo;
 	double sc;
@@ -75,6 +79,7 @@ class Glossy extends Material{
 		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
 		if(cosine < 0) cosine = 0; //if not in hemisphere
 		return cosine/Math.PI; //probability of direction follows cosine law
+		//(A/PI is the BRDF, the cosine is from the rendering equations)
 	}
 
 	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
@@ -92,10 +97,10 @@ class Glossy extends Material{
 			//reflect
 			srec.specular_ray = new Ray(rec.p, Vec3.unit_vector(reflected.add(Utilities.random_in_unit_sphere().mul(1-sc))));
 			srec.attenuation = new Vec3(1,1,1); //dielectrics dont have colored reflections
-			srec.is_specular = true;
+			srec.is_specular = 1;
 		} else {
 			//diffuse
-			srec.is_specular = false;
+			srec.is_specular = 0;
 		}
 		return true;
 	}
@@ -120,7 +125,7 @@ class Metal extends Material{
 		Vec3 reflected = Utilities.reflect(Vec3.unit_vector(r_in.direction()),rec.normal);
 		srec.specular_ray = new Ray(rec.p, Vec3.unit_vector(reflected.add(Utilities.random_in_unit_sphere().mul(fuzz))));
 		srec.attenuation = albedo; //tint reflection
-		srec.is_specular = true;
+		srec.is_specular = 1;
 		srec.pdf = null; //no distribution function
 		return true;
 	}
@@ -139,7 +144,7 @@ class Dielectric extends Material{
 		Vec3 outward_normal;
 		Vec3 reflected = Utilities.reflect(r_in.direction(), rec.normal);
 		double ni_over_nt;
-		srec.is_specular = true;
+		srec.is_specular = 1;
 		srec.attenuation = transparency; //not accurate, isn't a function of path length
 		srec.pdf = null;
 		Vec3 refracted = new Vec3();
@@ -203,7 +208,7 @@ class Isotropic extends Material{
 	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
 		//isotropic scatters in all directions
 		srec.pdf = new IsotropicPDF();
-		srec.is_specular = false;
+		srec.is_specular = 0;
 		srec.specular_ray = new Ray(rec.p, Utilities.random_on_unit_sphere());
 		srec.attenuation = albedo.value(rec.u, rec.v, rec.p);
 		return true;

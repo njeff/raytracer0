@@ -26,6 +26,62 @@ class CosinePDF extends PDF{
 	}
 }
 
+//https://agraphicsguy.wordpress.com/2015/11/01/sampling-microfacet-brdf/
+//http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
+class GGXPDF extends PDF{
+	ONB uvw = new ONB();
+	Vec3 in;
+	double r;
+	public GGXPDF(Vec3 w, Vec3 in_dir, double roughness){
+		uvw.buildFromW(w);
+		in = in_dir;
+		r = roughness;
+	}
+
+	public double value(Vec3 direction){
+		Vec3 h = Vec3.unit_vector(direction.sub(in));
+		//p = D*abs(h.n)
+		return Utilities.GGX1(uvw.w(),h,r)*Math.abs(Vec3.dot(h,uvw.w()));
+	}
+
+	public Vec3 generate(){
+		return uvw.local(random_GGX());
+	}
+
+	private Vec3 random_GGX(){
+		double r1 = Math.random();
+		double r2 = Math.random();
+		double phi = 2*Math.PI*r1;
+		//see if this can be simplified later to not use atan
+		double theta = Math.atan(r*Math.sqrt(r2)/Math.sqrt(1-r2));
+		double x = Math.cos(phi) * Math.sin(theta);
+		double y = Math.sin(phi) * Math.sin(theta);
+		double z = Math.cos(theta);
+		return new Vec3(x, y, z);
+	}
+}
+
+//generate rays on hemisphere uniformly
+class ConstantHemispherePDF extends PDF{
+	Vec3 normal;
+	public ConstantHemispherePDF(Vec3 n){
+		normal = n;
+	}
+
+	public double value(Vec3 direction){
+		return 0.5/Math.PI;
+	}
+
+	public Vec3 generate(){
+		Vec3 on_h;
+		do{
+			on_h = Utilities.random_on_unit_sphere();
+		} while (Vec3.dot(normal,on_h) < 0);
+		return on_h;
+	}
+}
+
+//generate rays in all directions uniformly
 class IsotropicPDF extends PDF{
 	public double value(Vec3 direction){
 		return 0.25/Math.PI;

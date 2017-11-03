@@ -52,6 +52,19 @@ public class Utilities{
 	}
 
 	/**
+	* GGX Distribution function
+	*/
+	static double GGX1(Vec3 n, Vec3 h, double roughness){
+		double cosine_h = Vec3.dot(n, h);
+		double r2 = roughness*roughness;
+		return r2/(Math.PI*(Math.pow((r2-1)*cosine_h*cosine_h+1, 2)));
+	}
+
+	static double chiGGX(double v){
+		return v > 0 ? 1:0;
+	}
+
+	/**
 	* @param v direction of the incidence vector
 	* @param n normal of the surface
 	*/
@@ -82,6 +95,15 @@ public class Utilities{
 		double r0 = (1-ref_idx)/(1+ref_idx);
 		r0 = r0*r0;
 		return r0 + (1-r0)*Math.pow(1-cosine,5);
+	}
+
+	static Vec3 schlick2(double cosine, Vec3 f0){
+		return f0.add((new Vec3(1)).sub(f0).mul(Math.pow(1-cosine,5)));
+	}
+
+	//linearly interpolate postion p between a (0) and b (1)
+	static Vec3 lerp(Vec3 a, Vec3 b, double p){
+		return a.mul(1-p).add(b.mul(p));
 	}
 
 	/**
