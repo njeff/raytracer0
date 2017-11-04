@@ -1,10 +1,10 @@
 /**
 * Implementation of the Cook-Torrance BRDF
-* using GGX
 * https://computergraphics.stackexchange.com/questions/4394/path-tracing-the-cook-torrance-brdf
 * http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
 * http://simonstechblog.blogspot.com/2011/12/microfacet-brdf.html
 * https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf
+* todo: get actually working; adjust roughness via texture
 */
 public class CookTorrance extends Material{
 	Texture albedo;
@@ -98,9 +98,9 @@ public class CookTorrance extends Material{
 //https://computergraphics.stackexchange.com/questions/4394/path-tracing-the-cook-torrance-brdf
 class CookTorranceSpecular extends Material{
 	double rough, metallic, ior;
-	Vec3 spec_color;
+	Vec3 albedo, spec_color;
 	//roughness cannot be 0, otherwise the G term will degnerate to dirac delta (when half vector cosine is 1)
-	public CookTorranceSpecular(double roughness, double metal, double iOr, Vec3 specular_color){
+	public CookTorranceSpecular(double roughness, double metal, double iOr, Vec3 alb, Vec3 specular_color){
 		roughness += 0.01;
 		if(roughness > 1){
 			rough = 1;
@@ -108,8 +108,15 @@ class CookTorranceSpecular extends Material{
 			rough = roughness;
 		}
 		metallic = metal;
+		albedo = alb;
 		spec_color = specular_color;
 		ior = iOr;
+	}
+
+	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
+		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
+		if(cosine < 0) cosine = 0; //if not in hemisphere
+		return cosine/Math.PI; //probability of direction follows cosine law
 	}
 
 	public boolean scatter(Ray r_in, HitRecord rec, ScatterRecord srec){
@@ -133,6 +140,15 @@ class CookTorranceSpecular extends Material{
 		//srec.attenuation = f.mul(beckman(rec.normal, h, rough)*geometry(rec.normal, h, wi, wo)*(Math.PI/2)/Vec3.dot(rec.normal,wo)); //tint reflection
 		
 		//DFG/(4*nwo*pdf) for ggx samples with ggxpdf
+		Vec3 kd = (new Vec3(1)).sub(f).mul(1-metallic);
+
+		if(Math.random() < kd.x()){
+			srec.attenuation = albedo;
+			srec.is_specular = 0;
+			srec.pdf = new CosinePDF(rec.normal);
+			return true;
+		}
+
 		srec.attenuation = f.mul(Utilities.GGX1(rec.normal, h, rough)*geometryGGX(rec.normal, h, wi, wo)
 			/(4*Vec3.dot(rec.normal, wo)*p.value(srec.specular_ray.direction())));
 		srec.is_specular = 1;

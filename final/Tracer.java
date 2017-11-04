@@ -16,10 +16,10 @@ public class Tracer{
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.sphereGrid(true);
-		Camera cam = Scenes.sphereGridCam(nx,ny);
+		HittableList world = Scenes.random_scene(true);
+		Camera cam = Scenes.rsCam(nx,ny);
 		//set up objects to bias pdf
-		HittableList hlist = Scenes.sphereGridLights();
+		HittableList hlist = Scenes.rsLights();
 
 		//set up objects to bias pdf
 		//Hittable plight = new XYRect(140, 160, 0, 50, 300, null);

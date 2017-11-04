@@ -324,7 +324,7 @@ public class Scenes{
 		for(int j = 0; j<11; j++){
 			for(int k = 0; k<11; k++){
 				list[i++] = new Sphere(new Vec3(k*2,1,j*2), 0.9, 
-					new CookTorranceSpecular(j/10.0, k/10.0, 1.5, new Vec3(1,1,1)));
+					new CookTorranceSpecular(j/10.0, k/10.0, 1.5, new Vec3(1,1,1), new Vec3(0.65,0.05,0.05)));
 			}
 		}
 		list[i++] = new XZRect(-5,25,-5,25,-5, new Lambertian(new ConstantTexture(new Vec3(0.1,0.4,0.05))));
