@@ -7,7 +7,9 @@ Why in Java and not C++? Why go with something slower and more memory hungry? Wh
 The initial raytracer with my modifications is found in the `weekend` folder.
 My continuation of the raytracer from the next book, *Ray Tracing: The Next Week*, is found in the folder `week`. I've added triangle objects and STL file loading to render more complicated objects. The bounding volume hierarchies are really nice and are necessary for high polygon count STLs. I still need to find ways to make this raytracer more efficient and am reading up more on other raytracers and lighting algorithms.
 
-I've just gotten the third book in the series. Time to read that along with the other articles I've been trawling. The Lambertian is now correctly cosine weighted.
+I've just gotten the third book in the series. Time to read that along with the other articles I've been trawling.
+
+I'm currently working on implementing the Cook-Torrance BSDF. Running into some issues though, but I think I have the specualr component correct.
 
 The cube, magnolia, sphere, and teapot models in the `objects` folder are from [this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The [Pokeball](https://grabcad.com/library/pokemon-with-magnemite-1) and [Turners Cube](https://grabcad.com/library/turners-cube-6) are from GrabCad. Other teapot from [here](https://www.thingiverse.com/thing:17897). The earth and moon textures in `textures` were the first ones that showed up when I Googled.
 

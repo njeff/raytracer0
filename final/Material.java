@@ -19,9 +19,6 @@ public class Material{
 		return 0;
 	}
 
-	public double scatteringPDFS(Ray r_in, HitRecord rec, Ray scattered){
-		return 0;
-	}
 	/**
 	* Used for light sources
 	*/
@@ -39,16 +36,19 @@ class ScatterRecord{
 }
 
 //ideal diffuse material
+//integral of BRDF*COS over the hemisphere must equal 1
 class Lambertian extends Material{
 	Texture albedo;
 	public Lambertian(Texture a){
 		albedo = a;
 	}
 
+	//this is the last part of the rendering equation
 	public double scatteringPDF(Ray r_in, HitRecord rec, Ray scattered){
 		double cosine = Vec3.dot(rec.normal, Vec3.unit_vector(scattered.direction()));
-		if(cosine < 0) cosine = 0; //if not in hemisphere
-		return cosine/Math.PI; //probability of direction follows cosine law
+		if(cosine < 0) cosine = 0; //if not in hemisphere, 0 out
+		//only have cosine because the lambertian BRDF is constant
+		return cosine/Math.PI;
 	}
 
 	//we use cosine PDF for lower variance

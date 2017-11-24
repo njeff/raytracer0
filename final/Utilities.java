@@ -57,7 +57,8 @@ public class Utilities{
 	static double GGX1(Vec3 n, Vec3 h, double roughness){
 		double cosine_h = Vec3.dot(n, h);
 		double r2 = roughness*roughness;
-		return r2/(Math.PI*(Math.pow((r2-1)*cosine_h*cosine_h+1, 2)));
+		//tan2 = sec2 - 1
+		return r2*chiGGX(cosine_h)/(Math.PI*Math.pow(cosine_h,4)*Math.pow(r2 + 1/r2 - 1,2));
 	}
 
 	static double chiGGX(double v){

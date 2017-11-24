@@ -33,7 +33,7 @@ public class Scenes{
 
 		//three center spheres
 		//list[i++] = new Sphere(new Vec3(0,1,0),1.0, new Dielectric(new Vec3(0.95,0.95,0.95),1.5));
-		list[i++] = new Sphere(new Vec3(0,1,0),1.0, new CookTorrance(new ConstantTexture(new Vec3(0.65,0.05,0.05)), 1, 0, 1.5));
+		//list[i++] = new Sphere(new Vec3(0,1,0),1.0, new CookTorrance(new ConstantTexture(new Vec3(0.65,0.05,0.05)), 1, 0, 1.5));
 		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ConstantTexture(new Vec3(0.4,0.2,0.1))));
 		//list[i++] = new Sphere(new Vec3(-4,1,0),1.0, new Lambertian(new ImageTexture("../textures/PathfinderMap.jpg")));
 		list[i++] = new Sphere(new Vec3(4,1,0),1.0, new Glossy(new ConstantTexture(new Vec3(0.75,0.05,0.05)),1));
@@ -107,8 +107,6 @@ public class Scenes{
 		//list[i++] = b1;
 		list[i++] = b2;
 		//list[i++] = new Sphere(new Vec3(190,90,190), 90, new Dielectric(new Vec3(1,1,1),1.5));
-		list[i++] = new Sphere(new Vec3(190,90,190), 90, 
-			new CookTorrance(new ConstantTexture(new Vec3(0.65,0.1,0.1)), 0.5, 0.5, 1.5));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 165, 165), white), -18, Rotate.Y), new Vec3(130,0,65));
 		//list[i++] = new Translate(new Rotate(new Box(new Vec3(0, 0, 0), new Vec3(165, 330, 165), white), 15, Rotate.Y), new Vec3(265,0,295));
 		//list[i++] = new ConstantMedium(b1, 0.01, new ConstantTexture(new Vec3(1,1,1)));
@@ -324,27 +322,29 @@ public class Scenes{
 		for(int j = 0; j<11; j++){
 			for(int k = 0; k<11; k++){
 				list[i++] = new Sphere(new Vec3(k*2,1,j*2), 0.9, 
-					new CookTorranceSpecular(j/10.0, k/10.0, 1.5, new Vec3(1,1,1), new Vec3(0.65,0.05,0.05)));
+					new CookTorrance(j/10.0, k/10.0, 1.5, new Vec3(0.9,0.3,0.3)));
 			}
 		}
 		list[i++] = new XZRect(-5,25,-5,25,-5, new Lambertian(new ConstantTexture(new Vec3(0.1,0.4,0.05))));
-		list[i++] = new Sphere(new Vec3(10,45,10), 5, new DiffuseLight(new ConstantTexture(new Vec3(10, 10, 10))));
+		list[i++] = new Sphere(new Vec3(-10,45,10), 5, new DiffuseLight(new ConstantTexture(new Vec3(10, 10, 10))));
+		list[i++] = new Sphere(new Vec3(20,45,-50), 5, new DiffuseLight(new ConstantTexture(new Vec3(10, 10, 10))));
 		return new BVHNode(list,0,i,0,1);
 	}
 
 	static Camera sphereGridCam(int nx, int ny){
-		Vec3 lookfrom = new Vec3(9.99,40,10);
+		Vec3 lookfrom = new Vec3(50,40,10);
 		Vec3 lookat = new Vec3(10,1,10);
 		double dist_to_focus = lookfrom.sub(lookat).length(); //focus at end point
 		double aperture = 128;
-		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,1,0), 33, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
+		Camera cam = new Camera(lookfrom, lookat, new Vec3(0,0,1), 33, (double)(nx)/ny, aperture, dist_to_focus, 0, 1);
 		return cam;
 	}
 
 	static HittableList sphereGridLights(){
 		Hittable[] list = new Hittable[2];
 		int i = 0;
-		list[i++] = new Sphere(new Vec3(15,45,15), 5, null);
+		list[i++] = new Sphere(new Vec3(-10,45,10), 5, null);
+		list[i++] = new Sphere(new Vec3(20,45,-50), 5, null);
 		return new HittableList(list,i);
 	}
 }

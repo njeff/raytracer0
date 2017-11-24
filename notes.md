@@ -11,9 +11,17 @@ Can I modify the hemisphere distribution for plastic like objects (for specular)
 Can I also vary the number of samples per pixel so that pixels that are on average darker get more samples to reduce noise in those regions faster? Points that easily access light sources should require less sampling (I'm just thinking about this after looking at biased raytracing; not sure if this really works.).
 
 Now reading the third book:
-The equations are now making a ton more sense. From other sites (the scratchapixel website), I've been looking at how monte carlo integration works and saw the summing equation that get us the approximation of an integral. The dividing of the pdf helps us weight the more likely values less and the less likely value more. Lambertian objects have a constant BRDF for all directions because the BRDF is defined as light reflected/light that reaches surface. 
+The equations are now making a ton more sense. From other sites (the scratchapixel website), I've been looking at how monte carlo integration works and saw the summing equation that get us the approximation of an integral. We we sample with a non-uniform distribution (e.g. sample more frequently in directions that contribute more), we must divide by the probability of sampling in that direction to get the correct integral.
 
-BRDF = A * s(direction)/cos(theta), and since the scattering distribution over the hemisphere is cos(theta)/PI, we get A/PI.
+### [Cook-Torrance paper](https://www.cs.cornell.edu/~srm/publications/EGSR07-btdf.pdf):
+
+specular BRDF = DFG/(4*(wo.n)(wi.n))
+
+m in the below is the normal for the microfacet
+
+D(m) is the distribution of microfacets on the surface; units of 1/steradian
+G(i,o,m) is the shadowing function-masking function which returns the fraction of microsurfaces with normal m are visible in i and o
+F is the fresnel term
 
 ### Log
 - Trying to fix the BVH, for some reason the Cornell Box scene doesn't render correctly most of the time (see the samples in `samples/buggy`) and triangles in my triangle test scene don't render consistently (sometimes no triangles or only one of the two show up). When I load STL files I also get weird missing triangles that change every time I run the same render. The only randomness could be from choosing which axis to split on.

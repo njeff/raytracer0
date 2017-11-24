@@ -9,30 +9,17 @@ public class Tracer{
 	public static final int MAX_DEPTH = 5; //maximum recursion depth
 	public static final int nx = 500; //output resolution
 	public static final int ny = 500;
-	public static final int ns = 100; //samples per pixel
+	public static final int ns = 200; //samples per pixel
 
 	public static void main(String[] args){
 		DrawingPanel d = new DrawingPanel(nx,ny);
 		Graphics gr = d.getGraphics();
 		BufferedImage img = new BufferedImage(nx,ny,BufferedImage.TYPE_INT_ARGB);
 
-		HittableList world = Scenes.random_scene(true);
-		Camera cam = Scenes.rsCam(nx,ny);
+		HittableList world = Scenes.sphereGrid(true);
+		Camera cam = Scenes.sphereGridCam(nx,ny);
 		//set up objects to bias pdf
-		HittableList hlist = Scenes.rsLights();
-
-		//set up objects to bias pdf
-		//Hittable plight = new XYRect(140, 160, 0, 50, 300, null);
-		//Hittable plight = new XZRect(140, 160, 0, 50, 300, null);
-		//Hittable plight = new XYRect(-100, 100, -100, 100, -150, null);
-		//Hittable light_shape = new XZRect(113, 443, 127, 432, 554, null);
-		Hittable light_shape = new XYRect(3,5,1,3,-2,null);
-		Hittable light_shape2 = new Sphere(new Vec3(4,7,5),2, null);
-		//Hittable glass_shape = new Sphere(new Vec3(190,90,190),90, null);
-		Hittable[] a = new Hittable[2];
-		a[0] = light_shape;
-		a[1] = light_shape2;
-		//HittableList hlist = new HittableList(a,2);
+		HittableList hlist = Scenes.sphereGridLights();
 
 		for(int j = 0; j<ny; j++){
 			System.out.println("Row: " + j);
@@ -56,7 +43,10 @@ public class Tracer{
 					double u = (i+hs[s])/nx;
 					double v = (jj+vs[s])/ny;
 					Ray r = cam.get_ray(u,v);
-					col = col.add(color(r,world,hlist,0));
+					Vec3 sample = color(r,world,hlist,0);
+					if(sample.length() < 1E5){ //prevent infinities
+						col = col.add(sample);
+					}
 				}
 				col = col.div(ns);
 				if(col.r() > 1) col.e[0] = 1; //clamp outputs due to light sources
@@ -100,13 +90,7 @@ public class Tracer{
 					Ray scattered = new Ray(rec.p, p.generate(), r.time()); //generate a ray
 										
 					double scatter_prob = 0;
-					if(srec.is_specular == 0){ //normal way
-						scatter_prob = rec.mat.scatteringPDF(r, rec, scattered);
-					} else if (srec.is_specular == 2){ //sample cook torrance
-						scatter_prob = rec.mat.scatteringPDFS(r, rec, scattered);
-						scattered = srec.specular_ray;
-						scattered._time = r.time();
-					}
+					scatter_prob = rec.mat.scatteringPDF(r, rec, scattered);
 
 					double pdfv = p.value(scattered.direction()); //get the probability of a ray going that way based on pdf
 					
@@ -127,9 +111,9 @@ public class Tracer{
 			//background acts a large light source
 			Vec3 unit_dir = Vec3.unit_vector(r.direction());
 			double t = 0.5*(unit_dir.y() + 1.0);
-			//return Utilities.lerp(new Vec3(1.0), new Vec3(0.5,0.7,1.0), t); //create a gradient
+			return Utilities.lerp(new Vec3(1.0), new Vec3(0.5,0.7,1.0), t); //create a gradient
 			//or all black
-			return new Vec3(0,0,0);
+			//return new Vec3(0,0,0);
 		}
 	}
 }
