@@ -9,7 +9,7 @@ My continuation of the raytracer from the next book, *Ray Tracing: The Next Week
 
 I've just gotten the third book in the series. Time to read that along with the other articles I've been trawling.
 
-I'm currently working on implementing the Cook-Torrance BSDF. Running into some issues though, but I think I have the specualr component correct.
+Right now I am trying to implementing the Cook-Torrance BSDF. I'm not sure how correct mine is but it doesn't seem too wrong. However, there are little speckles of pure white on some edges that increases with roughness, and I'm trying to track down the source of them. Appearances are very deceiving when working with renderers, just looking "close enough" can be very wrong.
 
 The cube, magnolia, sphere, and teapot models in the `objects` folder are from [this site](http://people.sc.fsu.edu/~jburkardt/data/stla/stla.html). The [Pokeball](https://grabcad.com/library/pokemon-with-magnemite-1) and [Turners Cube](https://grabcad.com/library/turners-cube-6) are from GrabCad. Other teapot from [here](https://www.thingiverse.com/thing:17897). The earth and moon textures in `textures` were the first ones that showed up when I Googled.
 
@@ -44,4 +44,12 @@ The file `AccelTester.java` can be used to test if two scenes have the same inte
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/pot_metal.png" alt="STL sample." width="700px">
   <br>
   <img src="https://github.com/njeff/raytracer0/blob/master/samples/pokeball2.png" alt="Pokeball." width="700px">
+</p>
+
+## More work (some in progress)
+<p align="center">
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/spec2.png" alt="Volumes." width="700px"/>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/spec_diff.png" alt="Cornell box." width="700px"/>
+  <br>
+  <img src="https://github.com/njeff/raytracer0/blob/master/samples/spec_diff_bg.png" alt="Volumes." width="700px"/>
 </p>
